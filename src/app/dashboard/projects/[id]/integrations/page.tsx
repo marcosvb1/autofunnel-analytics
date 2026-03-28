@@ -5,13 +5,9 @@ import IntegrationStatus from '@/components/integrations/integration-status'
 import PostHogForm from './posthog-form'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Tables } from '@/types/database'
 
-interface Integration {
-  id: string
-  type: 'posthog' | 'meta_ads' | 'google_ads'
-  status: 'connected' | 'disconnected' | 'error'
-  last_sync_at: string | null
-}
+type Integration = Tables<'integrations'>
 
 export default function IntegrationsPage({ params }: { params: Promise<{ id: string }> }) {
   const [integrations, setIntegrations] = useState<Integration[]>([])
@@ -81,9 +77,12 @@ export default function IntegrationsPage({ params }: { params: Promise<{ id: str
         <PostHogForm projectId={projectId} onConnected={() => {
           setIntegrations(prev => [...prev, {
             id: 'new',
+            project_id: projectId,
             type: 'posthog',
             status: 'connected',
             last_sync_at: null,
+            credentials: {},
+            created_at: new Date().toISOString(),
           }])
         }} />
       )}
