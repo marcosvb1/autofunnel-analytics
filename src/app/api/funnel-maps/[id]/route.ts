@@ -17,11 +17,17 @@ export async function GET(
     
     const { data, error } = await supabase
       .from('funnel_maps')
-      .select('*')
+      .select('*, projects!inner(user_id)')
       .eq('id', id)
+      .eq('projects.user_id', user.id)
       .single()
 
-    if (error) throw error
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      }
+      throw error
+    }
 
     return NextResponse.json({ funnelMap: data })
   } catch (error) {
@@ -47,6 +53,20 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
     
+    const { data: existing, error: fetchError } = await supabase
+      .from('funnel_maps')
+      .select('id, projects!inner(user_id)')
+      .eq('id', id)
+      .eq('projects.user_id', user.id)
+      .single()
+
+    if (fetchError) {
+      if (fetchError.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      }
+      throw fetchError
+    }
+
     const { data, error } = await supabase
       .from('funnel_maps')
       .update({

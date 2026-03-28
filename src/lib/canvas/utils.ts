@@ -51,18 +51,18 @@ export function reactFlowToFunnelMap(
   projectId: string
 ): FunnelMap {
   return {
-    id: '',
+    id: crypto.randomUUID(),
     projectId,
     name: 'Edited Funnel',
     nodes: nodes.map((node) => ({
       id: node.id,
-      label: node.data.label,
-      url: node.data.url,
-      type: node.data.type,
-      volume: node.data.volume,
-      spend: node.data.spend,
-      campaign: node.data.campaign,
-      campaignId: node.data.campaignId,
+      label: node.data?.label ?? '',
+      url: node.data?.url ?? '',
+      type: node.data?.type ?? 'page',
+      volume: node.data?.volume ?? 0,
+      spend: node.data?.spend ?? 0,
+      campaign: node.data?.campaign ?? '',
+      campaignId: node.data?.campaignId ?? '',
       position: node.position,
     })),
     edges: edges.map((edge) => ({
@@ -75,8 +75,8 @@ export function reactFlowToFunnelMap(
       isMainPath: edge.data?.isMainPath ?? false,
     })),
     metadata: {
-      totalVolume: nodes.reduce((sum, n) => sum + n.data.volume, 0),
-      totalSpend: nodes.reduce((sum, n) => sum + n.data.spend, 0),
+      totalVolume: nodes.reduce((sum, n) => sum + (n.data?.volume ?? 0), 0),
+      totalSpend: nodes.reduce((sum, n) => sum + (n.data?.spend ?? 0), 0),
       totalConversions: 0,
       overallConversion: 0,
       roi: 0,
@@ -98,6 +98,7 @@ export function formatVolume(volume: number): string {
 }
 
 export function formatSpend(spend: number): string {
+  if (spend < 0) return `-$${Math.abs(spend).toFixed(0)}`
   return `$${spend.toFixed(0)}`
 }
 

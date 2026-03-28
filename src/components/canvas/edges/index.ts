@@ -1,5 +1,7 @@
-import FunnelEdgeComponent from './FunnelEdge'
+import FunnelEdge from './FunnelEdge'
 
 export const edgeTypes = {
-  funnel: FunnelEdgeComponent,
+  funnel: FunnelEdge,
 }
+
+export { FunnelEdge }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   ReactFlow,
   Background,
@@ -75,8 +75,7 @@ function FunnelCanvasInner({
   metadata,
 }: FunnelCanvasProps) {
   const { nodes, edges, setNodes, setEdges } = useFunnelStore()
-  const [isSaving, setIsSaving] = useState(false)
-  const { handleAutoLayout, handleExport } = useFunnelCanvas(projectId, mapId)
+  const { handleAutoLayout, handleSave, handleExport, isSaving } = useFunnelCanvas(projectId, mapId)
 
   useEffect(() => {
     setNodes(initialNodes)
@@ -96,19 +95,6 @@ function FunnelCanvasInner({
     },
     [edges, setEdges]
   )
-
-  const handleSave = async () => {
-    setIsSaving(true)
-    try {
-      await fetch(`/api/funnel-maps/${mapId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes, edges }),
-      })
-    } finally {
-      setIsSaving(false)
-    }
-  }
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)]">

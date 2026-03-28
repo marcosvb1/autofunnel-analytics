@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useReactFlow } from '@xyflow/react'
 import { layoutNodes } from '@/lib/canvas/layout'
 import { useFunnelStore } from '@/lib/store/funnel-store'
@@ -7,6 +7,7 @@ import type { FunnelNode, FunnelEdge } from '@/types/canvas'
 export function useFunnelCanvas(projectId: string, mapId: string) {
   const { getNodes, getEdges, setNodes } = useReactFlow<FunnelNode, FunnelEdge>()
   const { setLoading, setError } = useFunnelStore()
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleAutoLayout = useCallback(async () => {
     setLoading(true)
@@ -23,7 +24,7 @@ export function useFunnelCanvas(projectId: string, mapId: string) {
   }, [getNodes, getEdges, setNodes, setLoading, setError])
 
   const handleSave = useCallback(async () => {
-    setLoading(true)
+    setIsSaving(true)
     try {
       const nodes = getNodes()
       const edges = getEdges()
@@ -43,9 +44,9 @@ export function useFunnelCanvas(projectId: string, mapId: string) {
     } catch (error) {
       setError('Failed to save funnel')
     } finally {
-      setLoading(false)
+      setIsSaving(false)
     }
-  }, [mapId, getNodes, getEdges, setLoading, setError])
+  }, [mapId, getNodes, getEdges, setError])
 
   const handleExport = useCallback(async () => {
     const nodesBounds = document.querySelector('.react-flow__viewport') as HTMLElement
@@ -72,5 +73,6 @@ export function useFunnelCanvas(projectId: string, mapId: string) {
     handleAutoLayout,
     handleSave,
     handleExport,
+    isSaving,
   }
 }
