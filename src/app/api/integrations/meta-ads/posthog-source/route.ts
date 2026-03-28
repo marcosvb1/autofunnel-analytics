@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
       campaigns,
     })
   } catch (error) {
+    console.error('Failed to check Meta Ads source:', error)
     return NextResponse.json(
       { error: 'Failed to check Meta Ads source' },
       { status: 500 }
@@ -89,6 +90,28 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const { conversion_event, date_range } = body
+
+    if (conversion_event !== undefined && (typeof conversion_event !== 'string' || conversion_event === '')) {
+      return NextResponse.json(
+        { error: 'conversion_event must be a non-empty string' },
+        { status: 400 }
+      )
+    }
+
+    if (date_range !== undefined) {
+      if (typeof date_range !== 'object' || date_range === null) {
+        return NextResponse.json(
+          { error: 'date_range must be an object with start and end properties' },
+          { status: 400 }
+        )
+      }
+      if (!date_range.start || !date_range.end) {
+        return NextResponse.json(
+          { error: 'date_range must include both start and end properties' },
+          { status: 400 }
+        )
+      }
+    }
 
     const posthogIntegration = await getIntegration(projectId, 'posthog')
     if (!posthogIntegration) {
@@ -117,6 +140,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
+    console.error('Failed to calculate attribution:', error)
     return NextResponse.json(
       { error: 'Failed to calculate attribution' },
       { status: 500 }
