@@ -14,6 +14,7 @@ export interface FunnelNodeData {
   spend: number
   campaign?: string
   campaignId?: string
+  position?: { x: number; y: number }
 }
 
 export interface FunnelEdgeData {
