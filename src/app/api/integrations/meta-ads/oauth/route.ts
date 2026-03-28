@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { exchangeCodeForToken, getLongLivedToken, getOAuthConfig } from '@/lib/integrations/meta-ads/oauth'
 import { createIntegration } from '@/lib/db/integrations'
+import { createClient } from '@/lib/supabase/server'
+
+const STATE_EXPIRY_MS = 10 * 60 * 1000 // 10 minutes
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const code = request.nextUrl.searchParams.get('code')
     const stateParam = request.nextUrl.searchParams.get('state')
     
@@ -12,6 +22,16 @@ export async function GET(request: NextRequest) {
     }
 
     const state = JSON.parse(stateParam)
+    
+    if (state.userId !== user.id) {
+      return NextResponse.json({ error: 'State user mismatch' }, { status: 403 })
+    }
+
+    const stateAge = Date.now() - state.timestamp
+    if (stateAge > STATE_EXPIRY_MS) {
+      return NextResponse.json({ error: 'State expired' }, { status: 400 })
+    }
+
     const config = getOAuthConfig()
 
     const shortLivedToken = await exchangeCodeForToken(code, config)
