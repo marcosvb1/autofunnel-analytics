@@ -84,9 +84,14 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <CardTitle>Funnel Map</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-500">
-            Connect PostHog and sync to generate your first funnel map.
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-gray-500">
+              Connect PostHog and sync to generate your first funnel map.
+            </p>
+            <Link href={`/dashboard/projects/${projectId}/funnel`}>
+              <Button variant="outline">View Funnel</Button>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
