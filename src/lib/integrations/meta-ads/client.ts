@@ -31,7 +31,11 @@ export class MetaAdsClient {
       })
     }
 
-    const response = await fetch(url.toString())
+    const response = await fetch(url.toString(), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
     if (!response.ok) {
       const error = await response.json()
@@ -72,7 +76,7 @@ export class MetaAdsClient {
   async getCampaignInsights(campaignId: string, options?: {
     date_start?: string
     date_end?: string
-  }): Promise<MetaCampaignInsights> {
+  }): Promise<MetaCampaignInsights | null> {
     if (!this.adAccountId) {
       throw new Error('Ad account ID is required')
     }

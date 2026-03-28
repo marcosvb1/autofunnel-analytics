@@ -83,7 +83,3 @@ export interface MetaOAuthResponse {
   token_type: string
 }
 
-export interface MetaOAuthUser {
-  id: string
-  name: string
-}
