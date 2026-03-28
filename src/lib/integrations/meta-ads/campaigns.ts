@@ -40,9 +40,12 @@ function normalizeCampaign(
   campaign: MetaCampaign,
   insights: MetaCampaignInsights | null
 ): NormalizedCampaign {
-  const budget = parseFloat(campaign.daily_budget || campaign.lifetime_budget || '0') / 100
+  const rawBudget = campaign.daily_budget || campaign.lifetime_budget || '0'
+  const budgetString = rawBudget === '' ? '0' : rawBudget
+  const budget = parseFloat(budgetString) / 100
   const spend = parseFloat(insights?.spend || '0')
-  const conversions = insights?.actions?.find(a => 
+  const actions = insights?.actions ?? []
+  const conversions = actions.find(a => 
     a.action_type === 'purchase' || a.action_type === 'omni_purchase'
   )?.value || '0'
 
