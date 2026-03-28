@@ -5,17 +5,13 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import IntegrationStatus from '@/components/integrations/integration-status'
+import type { Tables } from '@/types/database'
 
 interface Project {
   id: string
   name: string
   description: string | null
-  integrations: Array<{
-    id: string
-    type: 'posthog' | 'meta_ads' | 'google_ads'
-    status: 'connected' | 'disconnected' | 'error'
-    last_sync_at: string | null
-  }>
+  integrations: Tables<'integrations'>[]
 }
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {

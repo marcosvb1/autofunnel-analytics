@@ -37,13 +37,16 @@ export default function PricingCard({
             </li>
           ))}
         </ul>
-        <Button
-          className="w-full"
-          variant={isPopular ? 'default' : 'outline'}
-          asChild
+        <a
+          href={buttonHref}
+          className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full h-9 px-4 py-2 ${
+            isPopular 
+              ? 'bg-primary text-primary-foreground shadow hover:bg-primary/90' 
+              : 'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground'
+          }`}
         >
-          <a href={buttonHref}>{buttonText}</a>
-        </Button>
+          {buttonText}
+        </a>
       </CardContent>
     </Card>
   )

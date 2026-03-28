@@ -11,6 +11,7 @@ export class PostHogClient {
     if (typeof credentials === 'string') {
       this.apiKey = credentials
       this.projectId = projectId!
+      this.host = DEFAULT_HOST
     } else {
       this.apiKey = credentials.api_key
       this.projectId = credentials.project_id
@@ -24,8 +25,6 @@ export class PostHogClient {
     if (!this.projectId) {
       throw new Error('Project ID is required')
     }
-
-    this.host = this.host || DEFAULT_HOST
   }
 
   private async request(endpoint: string, params?: Record<string, unknown>) {

@@ -11,7 +11,7 @@ export interface NormalizedPath {
 export interface NormalizedPathNode {
   id: string
   url: string
-  type: 'pageview' | 'event'
+  type: 'pageview' | 'event' | 'action'
   occurrences: number
   percentage: number
 }
