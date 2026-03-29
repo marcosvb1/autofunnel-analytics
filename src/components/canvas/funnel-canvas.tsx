@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -11,16 +11,19 @@ import {
   NodeTypes,
 } from '@xyflow/react'
 import PageNode from './page-node'
+import { CanvasControls } from './canvas-controls'
 import { useCanvasStore } from '@/lib/store/canvas-store'
 import { computeAutoLayout } from '@/lib/layout/elk-layout'
+import { FunnelNode } from '@/types/funnel'
 
 const nodeTypes: NodeTypes = {
   pageNode: PageNode,
 }
 
 function FunnelCanvasInner() {
-  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useCanvasStore()
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, addNode } = useCanvasStore()
   const { fitView } = useReactFlow()
+  const [nodeCounter, setNodeCounter] = useState(1)
 
   const onLayout = useCallback(async () => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = await computeAutoLayout(nodes, edges)
@@ -28,6 +31,29 @@ function FunnelCanvasInner() {
     setEdges(layoutedEdges)
     setTimeout(() => fitView({ padding: 0.2 }), 100)
   }, [nodes, edges, setNodes, setEdges, fitView])
+
+  const handleAddNode = useCallback(() => {
+    const newNode: FunnelNode = {
+      id: `node-${Date.now()}`,
+      type: 'pageNode',
+      position: { x: 100 + nodeCounter * 50, y: 100 + nodeCounter * 50 },
+      data: {
+        id: `node-${Date.now()}`,
+        label: `New Page ${nodeCounter}`,
+        volume: 0,
+      },
+    }
+    addNode(newNode)
+    setNodeCounter((prev) => prev + 1)
+  }, [addNode, nodeCounter])
+
+  const handleResetZoom = useCallback(() => {
+    fitView({ padding: 0.2 })
+  }, [fitView])
+
+  const handleExport = useCallback(() => {
+    console.log('Export not implemented yet')
+  }, [])
 
   return (
     <div className="w-full h-screen">
@@ -56,13 +82,12 @@ function FunnelCanvasInner() {
         <Background color="#e5e7eb" gap={20} size={1} />
       </ReactFlow>
 
-      {/* Auto-layout button */}
-      <button
-        onClick={onLayout}
-        className="absolute top-4 right-4 z-10 px-4 py-2 bg-primary text-white rounded-lg shadow-md hover:bg-primary-hover transition-colors font-medium text-sm"
-      >
-        Auto Layout
-      </button>
+      <CanvasControls
+        onAddNode={handleAddNode}
+        onAutoLayout={onLayout}
+        onResetZoom={handleResetZoom}
+        onExport={handleExport}
+      />
     </div>
   )
 }
