@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getProjects, createProject } from '@/lib/db/projects'
 import { createProjectSchema } from '@/lib/validations/project'
-import { MOCK_MODE } from '@/lib/mock/config'
 import { mockProjects } from '@/lib/mock/data'
+
+const MOCK_MODE = process.env.MOCK_MODE === 'true'
 
 export async function GET() {
   if (MOCK_MODE) {

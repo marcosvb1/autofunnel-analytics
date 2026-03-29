@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getIntegration, updateIntegration } from '@/lib/db/integrations'
 import { MetaAdsClient } from '@/lib/integrations/meta-ads/client'
-import { MOCK_MODE } from '@/lib/mock/config'
+
+const MOCK_MODE = process.env.MOCK_MODE === 'true'
 
 export async function POST(request: NextRequest) {
   if (MOCK_MODE) {
