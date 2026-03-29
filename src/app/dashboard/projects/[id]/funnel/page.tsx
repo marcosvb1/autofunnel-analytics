@@ -102,14 +102,14 @@ export default function FunnelPage({ params }: FunnelPageProps) {
     <FunnelCanvas
       projectId={projectId}
       mapId={funnelMap.id}
-      initialNodes={funnelMap.nodes}
-      initialEdges={funnelMap.edges}
+      initialNodes={funnelMap.nodes || []}
+      initialEdges={funnelMap.edges || []}
       metadata={{
-        totalVolume: funnelMap.metadata.totalVolume,
-        totalSpend: funnelMap.metadata.totalSpend,
-        totalConversions: funnelMap.metadata.totalConversions,
-        overallConversion: funnelMap.metadata.overallConversion,
-        roi: funnelMap.metadata.roi,
+        totalVolume: funnelMap.metadata?.totalVolume || 0,
+        totalSpend: funnelMap.metadata?.totalSpend || 0,
+        totalConversions: funnelMap.metadata?.totalConversions || 0,
+        overallConversion: funnelMap.metadata?.overallConversion || 0,
+        roi: funnelMap.metadata?.roi || 0,
       }}
     />
   )
