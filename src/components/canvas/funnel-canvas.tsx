@@ -15,6 +15,7 @@ import { CanvasControls } from './canvas-controls'
 import { useCanvasStore } from '@/lib/store/canvas-store'
 import { computeAutoLayout } from '@/lib/layout/elk-layout'
 import { FunnelNode } from '@/types/funnel'
+import { useDemoFunnel } from '@/hooks/use-demo-funnel'
 
 const nodeTypes: NodeTypes = {
   pageNode: PageNode,
@@ -24,6 +25,7 @@ function FunnelCanvasInner() {
   const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, addNode } = useCanvasStore()
   const { fitView } = useReactFlow()
   const [nodeCounter, setNodeCounter] = useState(1)
+  useDemoFunnel()
 
   const onLayout = useCallback(async () => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = await computeAutoLayout(nodes, edges)
