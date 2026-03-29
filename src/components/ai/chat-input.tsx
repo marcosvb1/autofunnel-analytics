@@ -42,7 +42,7 @@ export function ChatInput({ onSend, isLoading }: ChatInputProps) {
       <Button
         onClick={handleSubmit}
         disabled={isLoading || !value.trim()}
-        variant="default"
+        variant="primary"
       >
         {isLoading ? 'Sending...' : 'Send'}
       </Button>

@@ -3,12 +3,12 @@ import Link from 'next/link'
 
 export default function SignupPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+    <main className="min-h-screen flex items-center justify-center bg-bg-primary">
       <div className="w-full max-w-md p-4">
         <SignupForm />
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-text-tertiary">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-blue-600 hover:underline">
+          <Link href="/auth/login" className="text-primary hover:text-primary-hover font-medium hover:underline">
             Sign in
           </Link>
         </p>

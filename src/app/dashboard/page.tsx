@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import ProjectCard from '@/components/dashboard/project-card'
 import CreateProjectModal from '@/components/dashboard/create-project-modal'
+import PageHeader from '@/components/dashboard/page-header'
+import EmptyState from '@/components/dashboard/empty-state'
 import { useProjects } from '@/hooks/use-projects'
 
 export default function DashboardPage() {
@@ -21,29 +23,48 @@ export default function DashboardPage() {
   }
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading projects...</div>
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-pulse text-text-tertiary">Loading projects...</div>
+      </div>
+    )
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <p className="text-error mb-4">{error}</p>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">Your Projects</h1>
-        <Button onClick={() => setIsModalOpen(true)}>New Project</Button>
-      </div>
+    <div className="animate-fade-up">
+      <PageHeader
+        title="Your Projects"
+        subtitle="Manage and monitor your funnel analytics"
+        action={{
+          label: 'New Project',
+          onClick: () => setIsModalOpen(true),
+        }}
+      />
 
       {projects.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <p>No projects yet. Create your first project to get started.</p>
-          <Button onClick={() => setIsModalOpen(true)} className="mt-4">
-            Create Project
-          </Button>
-        </div>
+        <EmptyState
+          title="Create your first project"
+          description="Start building your funnel analytics by creating a new project. Connect your data sources and let AI detect your conversion paths."
+          action={{
+            label: 'Create Project',
+            onClick: () => setIsModalOpen(true),
+          }}
+        />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
             <ProjectCard
               key={project.id}
