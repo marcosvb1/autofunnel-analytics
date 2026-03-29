@@ -25,12 +25,25 @@ export async function fetchCampaigns(
 ): Promise<NormalizedCampaign[]> {
   const campaigns = await client.getCampaigns(options)
   
+  if (campaigns.length === 0) {
+    return []
+  }
+
+  const BATCH_SIZE = 10
   const normalizedCampaigns: NormalizedCampaign[] = []
 
-  for (const campaign of campaigns) {
-    const insights = await client.getCampaignInsights(campaign.id)
+  for (let i = 0; i < campaigns.length; i += BATCH_SIZE) {
+    const batch = campaigns.slice(i, i + BATCH_SIZE)
+    const batchWithInsights = await Promise.all(
+      batch.map(async (campaign) => ({
+        campaign,
+        insights: await client.getCampaignInsights(campaign.id),
+      }))
+    )
     
-    normalizedCampaigns.push(normalizeCampaign(campaign, insights))
+    for (const { campaign, insights } of batchWithInsights) {
+      normalizedCampaigns.push(normalizeCampaign(campaign, insights))
+    }
   }
 
   return normalizedCampaigns

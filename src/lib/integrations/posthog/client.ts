@@ -27,7 +27,7 @@ export class PostHogClient {
     }
   }
 
-  private async request(endpoint: string, params?: Record<string, unknown>) {
+  private async request(endpoint: string, params?: Record<string, unknown>, timeoutMs: number = 30000) {
     const url = new URL(`${this.host}/api/projects/${this.projectId}/${endpoint}`)
     
     if (params) {
@@ -38,25 +38,39 @@ export class PostHogClient {
       })
     }
 
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-    if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`PostHog API error: ${response.status} - ${error}`)
+    try {
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        const error = await response.text()
+        throw new Error(`PostHog API error: ${response.status} - ${error}`)
+      }
+
+      return response.json()
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`PostHog API request timed out after ${timeoutMs / 1000}s`)
+      }
+      throw error
+    } finally {
+      clearTimeout(timeoutId)
     }
-
-    return response.json()
   }
 
   async getPaths(options?: {
     start_date?: string
     end_date?: string
     limit?: number
+    offset?: number
   }): Promise<PostHogPathsResponse> {
     return this.request('path_analysis', {
       ...options,
@@ -88,28 +102,41 @@ export class PostHogClient {
 
   async query(sql: string, options?: {
     refresh?: 'blocking' | 'async' | 'force_blocking'
-  }): Promise<{ results: Record<string, unknown>[] }> {
-    const response = await fetch(`${this.host}/api/projects/${this.projectId}/query/`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: {
-          kind: 'HogQLQuery',
-          query: sql,
+  }, timeoutMs: number = 60000): Promise<{ results: Record<string, unknown>[] }> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+      const response = await fetch(`${this.host}/api/projects/${this.projectId}/query/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
-        refresh: options?.refresh || 'blocking',
-      }),
-    })
+        body: JSON.stringify({
+          query: {
+            kind: 'HogQLQuery',
+            query: sql,
+          },
+          refresh: options?.refresh || 'blocking',
+        }),
+        signal: controller.signal,
+      })
 
-    if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`HogQL query failed: ${response.status} - ${error}`)
+      if (!response.ok) {
+        const error = await response.text()
+        throw new Error(`HogQL query failed: ${response.status} - ${error}`)
+      }
+
+      return response.json()
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`HogQL query timed out after ${timeoutMs / 1000}s`)
+      }
+      throw error
+    } finally {
+      clearTimeout(timeoutId)
     }
-
-    return response.json()
   }
 
   async getPathsQuery(options?: {
@@ -117,7 +144,7 @@ export class PostHogClient {
     endPoint?: string
     stepCount?: number
     eventTypes?: ('pageview' | 'screen' | 'custom')[]
-  }): Promise<{ results: unknown[] }> {
+  }, timeoutMs: number = 60000): Promise<{ results: unknown[] }> {
     const body = {
       query: {
         kind: 'PathsQuery',
@@ -134,19 +161,32 @@ export class PostHogClient {
       refresh: 'blocking',
     }
 
-    const response = await fetch(`${this.host}/api/projects/${this.projectId}/query/`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-    if (!response.ok) {
-      throw new Error(`PathsQuery failed: ${response.status}`)
+    try {
+      const response = await fetch(`${this.host}/api/projects/${this.projectId}/query/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        throw new Error(`PathsQuery failed: ${response.status}`)
+      }
+
+      return response.json()
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`PathsQuery timed out after ${timeoutMs / 1000}s`)
+      }
+      throw error
+    } finally {
+      clearTimeout(timeoutId)
     }
-
-    return response.json()
   }
 }

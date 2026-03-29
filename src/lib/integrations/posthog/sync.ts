@@ -1,6 +1,6 @@
 import { PostHogClient } from './client'
-import { fetchPaths } from './paths'
-import { fetchEvents } from './events'
+import { fetchPaths, type NormalizedPath } from './paths'
+import { fetchEvents, type NormalizedEvent } from './events'
 import { createClient } from '@/lib/supabase/server'
 
 export interface SyncResult {
@@ -19,19 +19,50 @@ export async function syncPostHogPaths(
 ): Promise<SyncResult> {
   const supabase = await createClient()
   
-  const paths = await fetchPaths(client, {
-    startDate: options?.startDate || getDefaultStartDate(),
-    endDate: options?.endDate || getDefaultEndDate(),
-    limit: 1000,
-  })
+  const CHUNK_SIZE = 100
+  const MAX_PAGES = 10
+  
+  const allPaths: NormalizedPath[] = []
+  let hasMorePaths = true
+  let pagesFetched = 0
+  
+  while (hasMorePaths && pagesFetched < MAX_PAGES) {
+    const paths = await fetchPaths(client, {
+      startDate: options?.startDate || getDefaultStartDate(),
+      endDate: options?.endDate || getDefaultEndDate(),
+      limit: CHUNK_SIZE,
+      offset: allPaths.length,
+    })
 
-  const events = await fetchEvents(client, {
-    startDate: options?.startDate || getDefaultStartDate(),
-    endDate: options?.endDate || getDefaultEndDate(),
-    limit: 1000,
-  })
+    if (paths.length === 0) {
+      hasMorePaths = false
+    } else {
+      allPaths.push(...paths)
+      pagesFetched++
+    }
+  }
 
-  const pathsJson = paths.map(p => ({
+  const allEvents: NormalizedEvent[] = []
+  let hasMoreEvents = true
+  let eventPagesFetched = 0
+  
+  while (hasMoreEvents && eventPagesFetched < MAX_PAGES) {
+    const events = await fetchEvents(client, {
+      startDate: options?.startDate || getDefaultStartDate(),
+      endDate: options?.endDate || getDefaultEndDate(),
+      limit: CHUNK_SIZE,
+      offset: allEvents.length,
+    })
+
+    if (events.length === 0) {
+      hasMoreEvents = false
+    } else {
+      allEvents.push(...events)
+      eventPagesFetched++
+    }
+  }
+
+  const pathsJson = allPaths.map(p => ({
     nodes: p.nodes.map(n => ({
       url: n.url,
       type: n.type,
@@ -42,7 +73,7 @@ export async function syncPostHogPaths(
     conversion_rate: p.conversion_rate,
   }))
 
-  const eventsJson = events.map(e => ({
+  const eventsJson = allEvents.map(e => ({
     event: e.event,
     url: e.url,
     timestamp: e.timestamp,
@@ -55,7 +86,7 @@ export async function syncPostHogPaths(
       project_id: projectId,
       type: 'posthog_paths',
       status: 'success',
-      records_processed: paths.length,
+      records_processed: allPaths.length,
       completed_at: new Date().toISOString(),
     })
 
@@ -65,13 +96,13 @@ export async function syncPostHogPaths(
       project_id: projectId,
       type: 'posthog_events',
       status: 'success',
-      records_processed: events.length,
+      records_processed: allEvents.length,
       completed_at: new Date().toISOString(),
     })
 
   return {
-    pathsCount: paths.length,
-    eventsCount: events.length,
+    pathsCount: allPaths.length,
+    eventsCount: allEvents.length,
     success: true,
   }
 }

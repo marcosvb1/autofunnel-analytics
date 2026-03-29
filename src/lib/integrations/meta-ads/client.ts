@@ -20,7 +20,7 @@ export class MetaAdsClient {
     }
   }
 
-  private async request(endpoint: string, params?: Record<string, string>) {
+  private async request(endpoint: string, params?: Record<string, string>, timeoutMs: number = 30000) {
     const url = new URL(`${GRAPH_API_BASE}/${endpoint}`)
     
     url.searchParams.append('access_token', this.accessToken)
@@ -31,18 +31,31 @@ export class MetaAdsClient {
       })
     }
 
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(`Meta API error: ${error.error?.message || response.status}`)
+    try {
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(`Meta API error: ${error.error?.message || response.status}`)
+      }
+
+      return response.json()
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Meta API request timed out after ${timeoutMs / 1000}s`)
+      }
+      throw error
+    } finally {
+      clearTimeout(timeoutId)
     }
-
-    return response.json()
   }
 
   async getUser(): Promise<{ id: string; name: string }> {

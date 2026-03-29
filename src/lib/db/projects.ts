@@ -6,6 +6,19 @@ export async function getProjects(userId: string) {
   
   const { data, error } = await supabase
     .from('projects')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data
+}
+
+export async function getProjectsWithDetails(userId: string) {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('projects')
     .select(`
       *,
       integrations (*),
@@ -19,6 +32,20 @@ export async function getProjects(userId: string) {
 }
 
 export async function getProject(projectId: string, userId: string) {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', projectId)
+    .eq('user_id', userId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function getProjectWithDetails(projectId: string, userId: string) {
   const supabase = await createClient()
   
   const { data, error } = await supabase

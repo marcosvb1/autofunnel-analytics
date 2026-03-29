@@ -1,7 +1,18 @@
-import ELK from 'elkjs/lib/elk.bundled.js'
 import type { FunnelNode, FunnelEdge } from '@/types/canvas'
 
-const elk = new ELK()
+let elkInstance: Awaited<ReturnType<typeof importElk>> | null = null
+
+async function importElk() {
+  const ELK = (await import('elkjs/lib/elk.bundled.js')).default
+  return new ELK()
+}
+
+async function getElk() {
+  if (!elkInstance) {
+    elkInstance = await importElk()
+  }
+  return elkInstance
+}
 
 const LAYOUT_OPTIONS = {
   'elk.algorithm': 'layered',
@@ -18,6 +29,8 @@ export async function layoutNodes(
   edges: FunnelEdge[]
 ): Promise<FunnelNode[]> {
   if (nodes.length === 0) return []
+
+  const elk = await getElk()
 
   const graph = {
     id: 'root',
@@ -38,7 +51,7 @@ export async function layoutNodes(
     const layoutedGraph = await elk.layout(graph)
     
     const layoutedNodes = nodes.map((node) => {
-      const layoutedNode = layoutedGraph.children?.find((n) => n.id === node.id)
+      const layoutedNode = layoutedGraph.children?.find((n: any) => n.id === node.id)
       
       return {
         ...node,

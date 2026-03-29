@@ -44,8 +44,30 @@ export async function POST(request: NextRequest) {
       host: credentials.host,
     })
 
-    const pathsData = await posthogClient.getPaths({ limit: 100 })
-    const paths = transformPaths(pathsData.results || [])
+    const BATCH_SIZE = 50
+    const MAX_BATCHES = 10
+    const allPaths: FunnelDetectionInput['paths'] = []
+    let offset = 0
+    let batchesFetched = 0
+
+    while (batchesFetched < MAX_BATCHES) {
+      const pathsData = await posthogClient.getPaths({ 
+        limit: BATCH_SIZE,
+        offset,
+      })
+      
+      const batchPaths = transformPaths(pathsData.results || [])
+      
+      if (batchPaths.length === 0) {
+        break
+      }
+      
+      allPaths.push(...batchPaths)
+      offset += BATCH_SIZE
+      batchesFetched++
+    }
+
+    const paths = allPaths
 
     const input: FunnelDetectionInput = {
       paths,

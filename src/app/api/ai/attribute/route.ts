@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getIntegration } from '@/lib/db/integrations'
 import { MetaAdsClient } from '@/lib/integrations/meta-ads/client'
 import { processAttribution, AttributionResult } from '@/lib/ai/processing/attribution'
+import { withCache } from '@/lib/utils/cache'
 import type { FunnelMap } from '@/types/funnel'
 
 export async function POST(request: NextRequest) {
@@ -87,7 +88,11 @@ export async function POST(request: NextRequest) {
           const campaignsWithSpend = await Promise.all(
             metaCampaigns.slice(0, 20).map(async (c) => {
               try {
-                const insights = await metaClient.getCampaignInsights(c.id)
+                const insights = await withCache(
+                  `meta:insights:${c.id}`,
+                  () => metaClient.getCampaignInsights(c.id),
+                  5 * 60 * 1000 // 5 minutes
+                )
                 const spend = insights ? parseFloat(insights.spend) : 0
                 return {
                   id: c.id,

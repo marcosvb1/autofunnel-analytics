@@ -7,10 +7,28 @@ const DEFAULT_MODELS = {
   anthropic: 'claude-3-5-sonnet-20241022',
 }
 
+let openaiInstance: OpenAI | null = null
+let anthropicInstance: Anthropic | null = null
+
+async function getOpenAI(apiKey: string, browserOption?: { dangerouslyAllowBrowser: boolean }): Promise<OpenAI> {
+  if (!openaiInstance) {
+    const OpenAIModule = await import('openai')
+    openaiInstance = new OpenAIModule.default({ apiKey, ...browserOption })
+  }
+  return openaiInstance
+}
+
+async function getAnthropic(apiKey: string, browserOption?: { dangerouslyAllowBrowser: boolean }): Promise<Anthropic> {
+  if (!anthropicInstance) {
+    const AnthropicModule = await import('@anthropic-ai/sdk')
+    anthropicInstance = new AnthropicModule.default({ apiKey, ...browserOption })
+  }
+  return anthropicInstance
+}
+
 export class LLMClient {
   private provider: 'openai' | 'anthropic'
-  private openai: OpenAI | null = null
-  private anthropic: Anthropic | null = null
+  private apiKey: string
   private model: string
 
   constructor(config: LLMConfig) {
@@ -20,14 +38,7 @@ export class LLMClient {
 
     this.provider = config.provider
     this.model = config.model || DEFAULT_MODELS[config.provider]
-
-    const browserOption = config.dangerouslyAllowBrowser ? { dangerouslyAllowBrowser: true } : {}
-    
-    if (config.provider === 'openai') {
-      this.openai = new OpenAI({ apiKey: config.apiKey, ...browserOption })
-    } else {
-      this.anthropic = new Anthropic({ apiKey: config.apiKey, ...browserOption })
-    }
+    this.apiKey = config.apiKey
   }
 
   async complete(options: ChatCompletionOptions): Promise<LLMResponse> {
@@ -38,7 +49,10 @@ export class LLMClient {
   }
 
   private async openaiComplete(options: ChatCompletionOptions): Promise<LLMResponse> {
-    const response = await this.openai!.chat.completions.create({
+    const browserOption = this.constructor.name ? { dangerouslyAllowBrowser: true } : undefined
+    const openai = await getOpenAI(this.apiKey, browserOption)
+    
+    const response = await openai.chat.completions.create({
       model: this.model,
       messages: options.messages.map(m => ({
         role: m.role,
@@ -63,10 +77,13 @@ export class LLMClient {
   }
 
   private async anthropicComplete(options: ChatCompletionOptions): Promise<LLMResponse> {
+    const browserOption = this.constructor.name ? { dangerouslyAllowBrowser: true } : undefined
+    const anthropic = await getAnthropic(this.apiKey, browserOption)
+    
     const systemMessage = options.messages.find(m => m.role === 'system')
     const otherMessages = options.messages.filter(m => m.role !== 'system')
 
-    const response = await this.anthropic!.messages.create({
+    const response = await anthropic.messages.create({
       model: this.model,
       system: systemMessage?.content,
       messages: otherMessages.map(m => ({
@@ -77,10 +94,10 @@ export class LLMClient {
       max_tokens: options.maxTokens ?? 4096,
     })
 
-    const textBlock = response.content.find(b => b.type === 'text')
+    const textBlock = response.content.find((b: any) => b.type === 'text') as any
     
     return {
-      content: textBlock?.text || '',
+      content: (textBlock as any)?.text || '',
       usage: {
         promptTokens: response.usage.input_tokens,
         completionTokens: response.usage.output_tokens,

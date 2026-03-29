@@ -17,6 +17,7 @@ export async function fetchEvents(
     endDate?: string
     limit?: number
     event?: string
+    offset?: number
   }
 ): Promise<NormalizedEvent[]> {
   const response = await client.getEvents({
@@ -26,7 +27,13 @@ export async function fetchEvents(
     event: options?.event,
   })
 
-  return response.results.map(normalizeEvent)
+  let results = response.results.map(normalizeEvent)
+  
+  if (options?.offset) {
+    results = results.slice(options.offset)
+  }
+
+  return results
 }
 
 function normalizeEvent(event: PostHogEvent): NormalizedEvent {

@@ -22,6 +22,7 @@ export async function fetchPaths(
     startDate?: string
     endDate?: string
     limit?: number
+    offset?: number
   }
 ): Promise<NormalizedPath[]> {
   const response = await client.getPaths({
@@ -30,7 +31,13 @@ export async function fetchPaths(
     limit: options?.limit || 100,
   })
 
-  return response.results.map(normalizePath)
+  let results = response.results.map(normalizePath)
+  
+  if (options?.offset) {
+    results = results.slice(options.offset)
+  }
+
+  return results
 }
 
 function normalizePath(path: PostHogPath): NormalizedPath {

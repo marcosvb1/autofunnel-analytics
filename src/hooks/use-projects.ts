@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import type { ProjectWithIntegrations } from '@/types/project'
+import { useCachedFetch } from './use-cache'
 
 export function useProjects() {
-  const [projects, setProjects] = useState<ProjectWithIntegrations[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchProjects = async () => {
-    setIsLoading(true)
-    setError(null)
-    
-    try {
+  const {
+    data: projects,
+    isLoading,
+    error,
+    refetch,
+    invalidate,
+  } = useCachedFetch<ProjectWithIntegrations[]>(
+    'projects:list',
+    async () => {
       const response = await fetch('/api/projects')
       const data = await response.json()
       
@@ -20,13 +20,10 @@ export function useProjects() {
         throw new Error(data.error)
       }
       
-      setProjects(data.projects)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch projects')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      return data.projects
+    },
+    { ttl: 5 * 60 * 1000 }
+  )
 
   const createProject = async (name: string, description?: string) => {
     const response = await fetch('/api/projects', {
@@ -41,7 +38,7 @@ export function useProjects() {
       throw new Error(data.error)
     }
     
-    setProjects(prev => [data.project, ...prev])
+    invalidate()
     return data.project
   }
 
@@ -55,19 +52,15 @@ export function useProjects() {
       throw new Error(data.error)
     }
     
-    setProjects(prev => prev.filter(p => p.id !== projectId))
+    invalidate()
   }
 
-  useEffect(() => {
-    fetchProjects()
-  }, [])
-
   return {
-    projects,
+    projects: projects || [],
     isLoading,
     error,
     createProject,
     deleteProject,
-    refetch: fetchProjects,
+    refetch,
   }
 }
