@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getIntegration, updateIntegration } from '@/lib/db/integrations'
 import { syncMetaAds } from '@/lib/integrations/meta-ads/sync'
+import { MOCK_MODE } from '@/lib/mock/config'
+import { mockSyncResult } from '@/lib/mock/data'
 
 export async function POST(request: NextRequest) {
+  if (MOCK_MODE) {
+    return NextResponse.json(mockSyncResult)
+  }
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

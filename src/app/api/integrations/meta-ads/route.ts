@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getIntegration, updateIntegration } from '@/lib/db/integrations'
 import { MetaAdsClient } from '@/lib/integrations/meta-ads/client'
+import { MOCK_MODE } from '@/lib/mock/config'
 
 export async function POST(request: NextRequest) {
+  if (MOCK_MODE) {
+    return NextResponse.json({ 
+      integration: { 
+        id: 'int-002', 
+        status: 'connected',
+        credentials: { ad_account_id: 'act_123456' }
+      } 
+    })
+  }
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

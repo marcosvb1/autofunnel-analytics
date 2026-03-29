@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { MOCK_MODE } from '@/lib/mock/config'
+import { mockFunnelMap } from '@/lib/mock/data'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
+  if (MOCK_MODE) {
+    if (id === 'fm-001') {
+      return NextResponse.json({ funnelMap: mockFunnelMap })
+    }
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -12,8 +23,6 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const { id } = await params
     
     const { data, error } = await supabase
       .from('funnel_maps')
@@ -42,6 +51,15 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
+  if (MOCK_MODE) {
+    return NextResponse.json(
+      { error: 'Editing disabled in demo mode' },
+      { status: 403 }
+    )
+  }
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -50,7 +68,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = await params
     const body = await request.json()
     
     const { data: existing, error: fetchError } = await supabase

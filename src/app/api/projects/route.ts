@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getProjects, createProject } from '@/lib/db/projects'
 import { createProjectSchema } from '@/lib/validations/project'
+import { MOCK_MODE } from '@/lib/mock/config'
+import { mockProjects } from '@/lib/mock/data'
 
 export async function GET() {
+  if (MOCK_MODE) {
+    return NextResponse.json({ projects: mockProjects })
+  }
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -23,6 +29,13 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (MOCK_MODE) {
+    return NextResponse.json(
+      { error: 'Project creation disabled in demo mode' },
+      { status: 403 }
+    )
+  }
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

@@ -1,7 +1,12 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { MOCK_MODE } from '@/lib/mock/config'
 
 export async function updateSession(request: NextRequest) {
+  if (MOCK_MODE) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
