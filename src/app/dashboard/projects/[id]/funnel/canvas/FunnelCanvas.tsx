@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -21,7 +21,7 @@ import { edgeTypes } from '@/components/canvas/edges'
 import ToolbarPanel from '@/components/canvas/panels/ToolbarPanel'
 import MetricsPanel from '@/components/canvas/panels/MetricsPanel'
 import { useFunnelStore } from '@/lib/store/funnel-store'
-import { useFunnelCanvas } from '@/hooks/use-funnel-canvas'
+import { layoutNodes } from '@/lib/canvas/layout'
 import type { FunnelNode, FunnelEdge } from '@/types/canvas'
 
 interface FunnelCanvasProps {
@@ -75,12 +75,72 @@ function FunnelCanvasInner({
   metadata,
 }: FunnelCanvasProps) {
   const { nodes, edges, setNodes, setEdges } = useFunnelStore()
-  const { handleAutoLayout, handleSave, handleExport, isSaving } = useFunnelCanvas(projectId, mapId)
+  const { getNodes, getEdges } = useReactFlow<FunnelNode, FunnelEdge>()
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    setNodes(initialNodes)
-    setEdges(initialEdges)
-  }, [initialNodes, initialEdges, setNodes, setEdges])
+    if (initialNodes && initialNodes.length > 0) {
+      setNodes(initialNodes)
+      setEdges(initialEdges || [])
+    }
+  }, [])
+
+  const handleAutoLayout = useCallback(async () => {
+    try {
+      const currentNodes = getNodes() as FunnelNode[]
+      const currentEdges = getEdges() as FunnelEdge[]
+      const layoutedNodes = await layoutNodes(currentNodes, currentEdges)
+      setNodes(layoutedNodes)
+    } catch (error) {
+      console.error('Layout error:', error)
+    }
+  }, [getNodes, getEdges, setNodes])
+
+  const handleSave = useCallback(async () => {
+    setIsSaving(true)
+    try {
+      const currentNodes = getNodes()
+      const currentEdges = getEdges()
+
+      const response = await fetch(`/api/funnel-maps/${mapId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nodes: currentNodes,
+          edges: currentEdges,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save')
+      }
+    } catch (error) {
+      console.error('Save error:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }, [mapId, getNodes, getEdges])
+
+  const handleExport = useCallback(async () => {
+    const viewport = document.querySelector('.react-flow__viewport') as HTMLElement
+    if (!viewport) return
+
+    try {
+      const { toPng } = await import('html-to-image')
+      
+      const dataUrl = await toPng(viewport, {
+        backgroundColor: '#ffffff',
+        quality: 1,
+      })
+
+      const link = document.createElement('a')
+      link.download = `funnel-${mapId}.png`
+      link.href = dataUrl
+      link.click()
+    } catch (error) {
+      console.error('Export error:', error)
+    }
+  }, [mapId])
 
   const onNodesChange = useCallback(
     (changes: NodeChange<FunnelNode>[]) => {

@@ -33,8 +33,6 @@ export interface CanvasActions {
   setError: (error: string | null) => void
   setViewport: (viewport: CanvasState['viewport']) => void
   reset: () => void
-  getNode: (id: string) => FunnelNode | null
-  getEdge: (id: string) => FunnelEdge | null
 }
 
 // Layout options for Elk.js

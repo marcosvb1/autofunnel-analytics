@@ -12,99 +12,42 @@ const initialState: CanvasState = {
   viewport: { x: 0, y: 0, zoom: 1 },
 }
 
-interface NodeMapState {
-  nodesMap: Map<string, FunnelNode>
-  edgesMap: Map<string, FunnelEdge>
-}
-
-const nodeMapState: NodeMapState = {
-  nodesMap: new Map(),
-  edgesMap: new Map(),
-}
-
-function mapsToArrays(state: NodeMapState): Pick<CanvasState, 'nodes' | 'edges'> {
-  return {
-    nodes: Array.from(state.nodesMap.values()),
-    edges: Array.from(state.edgesMap.values()),
-  }
-}
-
-export const useFunnelStore = create<CanvasState & CanvasActions & NodeMapState>((set, get) => ({
+export const useFunnelStore = create<CanvasState & CanvasActions>((set) => ({
   ...initialState,
-  ...nodeMapState,
 
-  setNodes: (nodes) => {
-    const newMap = new Map<string, FunnelNode>()
-    nodes.forEach((node) => newMap.set(node.id, node))
-    set({ nodes, nodesMap: newMap })
-  },
+  setNodes: (nodes) => set({ nodes }),
 
-  setEdges: (edges) => {
-    const newMap = new Map<string, FunnelEdge>()
-    edges.forEach((edge) => newMap.set(edge.id, edge))
-    set({ edges, edgesMap: newMap })
-  },
+  setEdges: (edges) => set({ edges }),
 
-  addNode: (node) => {
-    const newMap = new Map(get().nodesMap)
-    newMap.set(node.id, node)
-    set({ 
-      nodes: Array.from(newMap.values()),
-      nodesMap: newMap,
-    })
-  },
+  addNode: (node) =>
+    set((state) => ({
+      nodes: [...state.nodes, node],
+    })),
 
-  updateNode: (id, data) => {
-    const nodesMap = get().nodesMap
-    const node = nodesMap.get(id)
-    if (!node) return
-    
-    const updatedNode = { ...node, data: { ...node.data, ...data } }
-    const newMap = new Map(nodesMap)
-    newMap.set(id, updatedNode)
-    
-    set({
-      nodes: Array.from(newMap.values()),
-      nodesMap: newMap,
-    })
-  },
+  updateNode: (id, data) =>
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        node.id === id ? { ...node, data: { ...node.data, ...data } } : node
+      ),
+    })),
 
-  removeNode: (id) => {
-    const newNodesMap = new Map(get().nodesMap)
-    newNodesMap.delete(id)
-    
-    const newEdgesMap = new Map(get().edgesMap)
-    get().edges.forEach((edge) => {
-      if (edge.source === id || edge.target === id) {
-        newEdgesMap.delete(edge.id)
-      }
-    })
-    
-    set({
-      nodes: Array.from(newNodesMap.values()),
-      edges: Array.from(newEdgesMap.values()),
-      nodesMap: newNodesMap,
-      edgesMap: newEdgesMap,
-    })
-  },
+  removeNode: (id) =>
+    set((state) => ({
+      nodes: state.nodes.filter((node) => node.id !== id),
+      edges: state.edges.filter(
+        (edge) => edge.source !== id && edge.target !== id
+      ),
+    })),
 
-  addEdge: (edge) => {
-    const newMap = new Map(get().edgesMap)
-    newMap.set(edge.id, edge)
-    set({ 
-      edges: Array.from(newMap.values()),
-      edgesMap: newMap,
-    })
-  },
+  addEdge: (edge) =>
+    set((state) => ({
+      edges: [...state.edges, edge],
+    })),
 
-  removeEdge: (id) => {
-    const newMap = new Map(get().edgesMap)
-    newMap.delete(id)
-    set({ 
-      edges: Array.from(newMap.values()),
-      edgesMap: newMap,
-    })
-  },
+  removeEdge: (id) =>
+    set((state) => ({
+      edges: state.edges.filter((edge) => edge.id !== id),
+    })),
 
   setSelectedNode: (id) => set({ selectedNodeId: id }),
 
@@ -114,15 +57,5 @@ export const useFunnelStore = create<CanvasState & CanvasActions & NodeMapState>
 
   setViewport: (viewport) => set({ viewport }),
 
-  reset: () => {
-    set({
-      ...initialState,
-      nodesMap: new Map(),
-      edgesMap: new Map(),
-    })
-  },
-
-  getNode: (id) => get().nodesMap.get(id) || null,
-
-  getEdge: (id) => get().edgesMap.get(id) || null,
+  reset: () => set(initialState),
 }))
