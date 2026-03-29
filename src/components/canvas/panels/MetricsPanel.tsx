@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { formatVolume, formatSpend, formatConversion } from '@/lib/canvas/utils'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
 interface MetricsPanelProps {
   totalVolume: number
@@ -7,6 +8,8 @@ interface MetricsPanelProps {
   totalConversions: number
   overallConversion: number
   roi: number
+  isCollapsed: boolean
+  onToggleCollapse: () => void
 }
 
 export default function MetricsPanel({
@@ -15,6 +18,8 @@ export default function MetricsPanel({
   totalConversions,
   overallConversion,
   roi,
+  isCollapsed,
+  onToggleCollapse,
 }: MetricsPanelProps) {
   const metrics = [
     { label: 'Total Visitors', value: formatVolume(totalVolume) },
@@ -25,20 +30,43 @@ export default function MetricsPanel({
   ]
 
   return (
-    <Card className="w-64">
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Funnel Metrics</CardTitle>
-      </CardHeader>
-      <CardContent className="py-2">
-        <div className="space-y-2">
+    <div className="flex-1 flex flex-col h-full overflow-hidden">
+      {/* Toggle Button */}
+      <div className="flex items-center justify-between p-3 border-b">
+        {!isCollapsed && (
+          <span className="text-sm font-medium text-gray-700">Funnel Metrics</span>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggleCollapse}
+          className="h-8 w-8 hover:bg-gray-100 transition-colors"
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? (
+            <PanelLeftOpen className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+
+      {/* Metrics Content */}
+      <div
+        className={`
+          flex-1 overflow-hidden transition-all duration-300
+          ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}
+        `}
+      >
+        <div className="p-3 space-y-2">
           {metrics.map((metric) => (
             <div key={metric.label} className="flex justify-between text-sm">
               <span className="text-gray-500">{metric.label}</span>
-              <span className="font-medium">{metric.value}</span>
+              <span className="font-medium text-gray-900">{metric.value}</span>
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
