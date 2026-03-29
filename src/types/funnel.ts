@@ -4,7 +4,54 @@
  * NO React Flow dependencies here - pure data structures.
  */
 
-export interface FunnelNodeData {
+// Phase 1: Page Node Data for React Flow visualization
+export interface PageNodeData {
+  id: string
+  label: string
+  volume: number
+  spend?: number
+  conversion?: number
+  roi?: number
+  campaign?: string
+  isConversion?: boolean
+  url?: string
+}
+
+// Phase 1: Edge Data for React Flow visualization
+export interface FunnelEdgeData {
+  conversion: string
+  roi?: string
+  traffic: number
+}
+
+// Phase 1: Funnel Metadata for overall stats
+export interface FunnelMetadata {
+  totalSpend: number
+  totalRevenue: number
+  overallROI: string
+  mainCampaign: string
+}
+
+// Phase 1: React Flow compatible Node type
+export interface FunnelNode {
+  id: string
+  type: 'pageNode'
+  position: { x: number; y: number }
+  data: PageNodeData
+}
+
+// Phase 1: React Flow compatible Edge type
+export interface FunnelEdge {
+  id: string
+  source: string
+  target: string
+  type: 'smoothstep'
+  animated?: boolean
+  data?: FunnelEdgeData
+}
+
+// Legacy types - kept for backward compatibility
+export interface LegacyFunnelNodeData {
   [key: string]: unknown
   id: string
   label: string
@@ -17,7 +64,7 @@ export interface FunnelNodeData {
   position?: { x: number; y: number }
 }
 
-export interface FunnelEdgeData {
+export interface LegacyFunnelEdgeData {
   [key: string]: unknown
   source: string
   target: string
