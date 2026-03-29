@@ -6,8 +6,6 @@ import { cn } from '@/lib/utils/helpers'
 
 const navItems = [
   { label: 'Projects', href: '/dashboard' },
-  { label: 'Settings', href: '/dashboard/settings' },
-  { label: 'Billing', href: '/dashboard/billing' },
 ]
 
 export default function Sidebar() {
