@@ -57,11 +57,16 @@ const config: Config = {
           tertiary: 'var(--text-tertiary)',
           muted: 'var(--text-muted)',
         },
-        bg: {
-          primary: 'var(--bg-primary)',
-          secondary: 'var(--bg-secondary)',
-          tertiary: 'var(--bg-tertiary)',
-          elevated: 'var(--bg-elevated)',
+        funnel: {
+          node: {
+            bg: '#ffffff',
+            border: '#e5e7eb',
+            hover: '#f9fafb',
+          },
+          edge: {
+            default: '#9ca3af',
+            hover: '#3b82f6',
+          },
         },
       },
       boxShadow: {
