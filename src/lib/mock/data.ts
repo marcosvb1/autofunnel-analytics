@@ -1,4 +1,5 @@
 import type { Json } from '@/types/database'
+import type { FunnelNodeData, FunnelEdgeData } from '@/types/funnel'
 
 export const mockProjects = [
   {
@@ -71,15 +72,15 @@ export const mockFunnelMap = {
   project_id: 'proj-001',
   name: 'Primary Checkout Flow',
   nodes: [
-    { id: 'n1', label: 'Homepage', url: '/', type: 'page', volume: 15000, spend: 2500, position: { x: 0, y: 0 } },
-    { id: 'n2', label: 'Product Listing', url: '/products', type: 'page', volume: 8000, spend: 1200, campaign: 'Spring Sale 2024', campaignId: 'camp-001', position: { x: 250, y: -50 } },
-    { id: 'n3', label: 'Product Detail', url: '/products/:id', type: 'page', volume: 4500, spend: 800, position: { x: 500, y: -50 } },
-    { id: 'n4', label: 'Add to Cart', url: '/cart', type: 'event', volume: 2800, spend: 0, position: { x: 750, y: -100 } },
-    { id: 'n5', label: 'Begin Checkout', url: '/checkout', type: 'page', volume: 1800, spend: 0, position: { x: 1000, y: -100 } },
-    { id: 'n6', label: 'Payment Info', url: '/checkout/payment', type: 'page', volume: 1200, spend: 0, position: { x: 1250, y: -100 } },
-    { id: 'n7', label: 'Purchase Complete', url: '/checkout/confirmation', type: 'conversion', volume: 850, spend: 0, position: { x: 1500, y: -100 } },
-    { id: 'n8', label: 'Browse Categories', url: '/categories', type: 'page', volume: 3000, spend: 500, position: { x: 500, y: 100 } },
-  ],
+    { id: 'n1', label: 'Homepage', url: '/', type: 'page' as const, volume: 15000, spend: 2500, position: { x: 0, y: 0 } },
+    { id: 'n2', label: 'Product Listing', url: '/products', type: 'page' as const, volume: 8000, spend: 1200, campaign: 'Spring Sale 2024', campaignId: 'camp-001', position: { x: 250, y: -50 } },
+    { id: 'n3', label: 'Product Detail', url: '/products/:id', type: 'page' as const, volume: 4500, spend: 800, position: { x: 500, y: -50 } },
+    { id: 'n4', label: 'Add to Cart', url: '/cart', type: 'event' as const, volume: 2800, spend: 0, position: { x: 750, y: -100 } },
+    { id: 'n5', label: 'Begin Checkout', url: '/checkout', type: 'page' as const, volume: 1800, spend: 0, position: { x: 1000, y: -100 } },
+    { id: 'n6', label: 'Payment Info', url: '/checkout/payment', type: 'page' as const, volume: 1200, spend: 0, position: { x: 1250, y: -100 } },
+    { id: 'n7', label: 'Purchase Complete', url: '/checkout/confirmation', type: 'conversion' as const, volume: 850, spend: 0, position: { x: 1500, y: -100 } },
+    { id: 'n8', label: 'Browse Categories', url: '/categories', type: 'page' as const, volume: 3000, spend: 500, position: { x: 500, y: 100 } },
+  ] as FunnelNodeData[],
   edges: [
     { id: 'e1', source: 'n1', target: 'n2', volume: 8000, conversion: 53.3, spend: 1200, isMainPath: true },
     { id: 'e2', source: 'n1', target: 'n8', volume: 3000, conversion: 20, spend: 500, isMainPath: false },
@@ -89,7 +90,7 @@ export const mockFunnelMap = {
     { id: 'e6', source: 'n4', target: 'n5', volume: 1800, conversion: 64.3, spend: 0, isMainPath: true },
     { id: 'e7', source: 'n5', target: 'n6', volume: 1200, conversion: 66.7, spend: 0, isMainPath: true },
     { id: 'e8', source: 'n6', target: 'n7', volume: 850, conversion: 70.8, spend: 0, isMainPath: true },
-  ],
+  ] as FunnelEdgeData[],
   metadata: {
     totalVolume: 15000,
     totalSpend: 4500,
@@ -97,7 +98,7 @@ export const mockFunnelMap = {
     overallConversion: 5.67,
     roi: 2.3,
     detectedAt: '2024-03-28T12:00:00Z',
-    provider: 'openai',
+    provider: 'openai' as const,
     model: 'gpt-4o-mini',
   },
   is_auto_generated: true,

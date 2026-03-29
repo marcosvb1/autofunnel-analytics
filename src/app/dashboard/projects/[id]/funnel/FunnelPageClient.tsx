@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import FunnelCanvas from './canvas/FunnelCanvas'
 import { Button } from '@/components/ui/button'
+import { mockFunnelMap } from '@/lib/mock/data'
+import { funnelMapToReactFlow } from '@/lib/canvas/utils'
 import type { FunnelNode, FunnelEdge } from '@/types/canvas'
 
 interface FunnelMapData {
@@ -51,6 +53,25 @@ export default function FunnelPageClient({ projectId }: FunnelPageClientProps) {
     fetchFunnelMap()
   }, [projectId])
 
+  const handleLoadDemo = () => {
+    const { nodes, edges } = funnelMapToReactFlow({
+      id: mockFunnelMap.id,
+      projectId: mockFunnelMap.project_id,
+      name: mockFunnelMap.name,
+      nodes: mockFunnelMap.nodes,
+      edges: mockFunnelMap.edges,
+      metadata: mockFunnelMap.metadata,
+    })
+    setFunnelMap({
+      id: mockFunnelMap.id,
+      project_id: mockFunnelMap.project_id,
+      name: mockFunnelMap.name,
+      nodes,
+      edges,
+      metadata: mockFunnelMap.metadata,
+    })
+  }
+
   const handleDetectFunnel = async () => {
     setIsDetecting(true)
     try {
@@ -86,12 +107,17 @@ export default function FunnelPageClient({ projectId }: FunnelPageClientProps) {
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">No Funnel Generated Yet</h2>
           <p className="text-gray-500 mb-4">
-            Make sure PostHog is connected and synced, then generate your funnel.
+            Load demo data to preview the canvas, or generate with AI after connecting PostHog.
           </p>
         </div>
-        <Button onClick={handleDetectFunnel} disabled={isDetecting}>
-          {isDetecting ? 'Generating...' : 'Generate Funnel with AI'}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleLoadDemo} variant="outline">
+            Load Demo Data
+          </Button>
+          <Button onClick={handleDetectFunnel} disabled={isDetecting}>
+            {isDetecting ? 'Generating...' : 'Generate Funnel with AI'}
+          </Button>
+        </div>
       </div>
     )
   }
