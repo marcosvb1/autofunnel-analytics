@@ -97,6 +97,7 @@ export class FunnelDetector {
         target: String(e.target || ''),
         volume: Number(e.volume) || 0,
         conversion: Number(e.conversion) || 0,
+        traffic: Number(e.traffic || e.volume) || 0,
         spend: Number(e.spend) || 0,
         isMainPath: Boolean(e.isMainPath) || false,
       }

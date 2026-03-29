@@ -7,8 +7,8 @@ export function funnelMapToReactFlow(funnel: FunnelMap): {
 } {
   const nodes: FunnelNode[] = funnel.nodes.map((node) => ({
     id: node.id,
-    type: getNodeType(node.type),
-    position: node.position || { x: 0, y: 0 },
+    type: getNodeType(node.type as string),
+    position: (node.position as { x: number; y: number }) || { x: 0, y: 0 },
     data: {
       id: node.id,
       label: node.label,
@@ -29,10 +29,11 @@ export function funnelMapToReactFlow(funnel: FunnelMap): {
     data: {
       source: edge.source,
       target: edge.target,
-      volume: edge.volume,
+      volume: edge.volume ?? 0,
       conversion: edge.conversion,
-      spend: edge.spend,
-      isMainPath: edge.isMainPath,
+      traffic: edge.traffic ?? edge.volume ?? 0,
+      spend: edge.spend as number | undefined,
+      isMainPath: edge.isMainPath ?? false,
     },
   }))
 
@@ -71,6 +72,7 @@ export function reactFlowToFunnelMap(
       target: edge.target,
       volume: edge.data?.volume ?? 0,
       conversion: edge.data?.conversion ?? 0,
+      traffic: edge.data?.traffic ?? edge.data?.volume ?? 0,
       spend: edge.data?.spend ?? 0,
       isMainPath: edge.data?.isMainPath ?? false,
     })),

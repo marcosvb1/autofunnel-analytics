@@ -38,19 +38,19 @@ Analysis principles:
 4. Provide actionable insights for optimization`
 
 export function buildAttributionPrompt(funnel: {
-  nodes: Array<{ id: string; label: string; campaign?: string; campaignId?: string; volume: number; spend: number }>
-  edges: Array<{ source: string; target: string; volume: number; conversion: number }>
+  nodes: Array<{ id: string; label: string; campaign?: string; campaignId?: string; volume: number; spend?: number }>
+  edges: Array<{ source: string; target: string; volume?: number; conversion?: number }>
 }): string {
   return `Analyze this funnel data for campaign attribution:
 
 Nodes:
 ${funnel.nodes.map(n => 
-  `- ${n.label} (id: ${n.id}, type: ${n.campaign ? 'campaign' : 'page'}, ${n.campaign ? `campaign: ${n.campaign} (${n.campaignId})` : ''}, volume: ${n.volume}, spend: $${n.spend})`
+  `- ${n.label} (id: ${n.id}, type: ${n.campaign ? 'campaign' : 'page'}, ${n.campaign ? `campaign: ${n.campaign} (${n.campaignId})` : ''}, volume: ${n.volume}, spend: $${n.spend ?? 0})`
 ).join('\n')}
 
 Edges (user flows):
 ${funnel.edges.map(e => 
-  `- ${e.source} → ${e.target}: ${e.volume} users, ${e.conversion} conversions`
+  `- ${e.source} → ${e.target}: ${e.volume ?? 0} users, ${e.conversion ?? 0} conversions`
 ).join('\n')}
 
 Provide attribution analysis with first-touch, last-touch, and multi-touch attribution models.

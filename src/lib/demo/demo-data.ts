@@ -59,7 +59,9 @@ export const demoEdges: FunnelEdge[] = [
     type: 'smoothstep',
     animated: true,
     data: {
-      conversion: '16%',
+      source: 'n1',
+      target: 'n2',
+      conversion: 16,
       traffic: 800,
     },
   },
@@ -70,7 +72,9 @@ export const demoEdges: FunnelEdge[] = [
     type: 'smoothstep',
     animated: true,
     data: {
-      conversion: '18.75%',
+      source: 'n2',
+      target: 'n3',
+      conversion: 18.75,
       traffic: 150,
     },
   },
@@ -81,8 +85,9 @@ export const demoEdges: FunnelEdge[] = [
     type: 'smoothstep',
     animated: true,
     data: {
-      conversion: '30%',
-      roi: '3.2x',
+      source: 'n3',
+      target: 'n4',
+      conversion: 30,
       traffic: 45,
     },
   },

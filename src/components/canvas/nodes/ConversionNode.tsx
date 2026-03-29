@@ -28,7 +28,7 @@ function ConversionNode({ data, selected }: NodeProps<FunnelNode>) {
             <span className="font-bold text-green-700">{formatVolume(data.volume)}</span>
           </div>
 
-          {data.spend > 0 && (
+          {data.spend !== undefined && data.spend > 0 && (
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Total Spend</span>
               <span className="font-medium">{formatSpend(data.spend)}</span>

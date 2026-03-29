@@ -1,15 +1,14 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
-import type { PageNodeData } from '@/types/funnel'
+import type { FunnelNode } from '@/types/canvas'
 
-// Format large numbers (5000 -> 5.0k, 1000000 -> 1.0M)
 const formatNumber = (num: number): string => {
   if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'
   if (num >= 1000) return (num / 1000).toFixed(1) + 'k'
   return num.toString()
 }
 
-const PageNode = memo(({ data, selected }: NodeProps<PageNodeData>) => {
+const PageNode = memo(({ data, selected }: NodeProps<FunnelNode>) => {
   const { label, volume, conversion, roi, spend, isConversion } = data
 
   return (

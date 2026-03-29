@@ -114,12 +114,12 @@ export class AttributionProcessor {
     const revenuePerCampaign = conversionsPerCampaign * CONVERSION_VALUE
 
     const attributions: AttributionEntry[] = campaignNodes.map(node => ({
-      campaignId: node.campaignId!,
+      campaignId: node.campaignId ?? 'unknown',
       campaignName: node.campaign || 'Unknown',
       conversions: conversionsPerCampaign,
       revenue: revenuePerCampaign,
-      spend: node.spend,
-      roi: node.spend > 0 ? revenuePerCampaign / node.spend : 0,
+      spend: node.spend ?? 0,
+      roi: (node.spend ?? 0) > 0 ? revenuePerCampaign / (node.spend ?? 0) : 0,
       attributionType: 'multi-touch'
     }))
 

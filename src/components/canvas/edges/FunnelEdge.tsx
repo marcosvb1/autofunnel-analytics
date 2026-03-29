@@ -52,9 +52,9 @@ function FunnelEdge({
           className="nodrag nopan"
         >
           <EdgeLabel
-            volume={data?.volume ?? 0}
-            conversion={data?.conversion ?? 0}
-            isMainPath={data?.isMainPath ?? false}
+            volume={(data?.volume as number) ?? 0}
+            conversion={(data?.conversion as number) ?? 0}
+            isMainPath={(data?.isMainPath as boolean) ?? false}
           />
         </div>
       </EdgeLabelRenderer>

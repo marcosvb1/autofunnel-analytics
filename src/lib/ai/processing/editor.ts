@@ -120,7 +120,7 @@ export class FunnelEditor {
     }
     
     const mergedVolume = sourceNodes.reduce((sum, n) => sum + n.volume, 0)
-    const mergedSpend = sourceNodes.reduce((sum, n) => sum + n.spend, 0)
+    const mergedSpend = sourceNodes.reduce((sum, n) => sum + (n.spend ?? 0), 0)
     
     const mergedNode: FunnelNodeData = {
       id: targetId,
@@ -160,7 +160,7 @@ export class FunnelEditor {
     }
     
     const regex = new RegExp(pattern, 'i')
-    const matchingNodes = funnel.nodes.filter(n => regex.test(n.url))
+    const matchingNodes = funnel.nodes.filter(n => n.url && regex.test(n.url))
     const matchingIds = matchingNodes.map(n => n.id)
     
     const edges = funnel.edges.filter(e => matchingIds.includes(e.source) && matchingIds.includes(e.target))
@@ -187,7 +187,7 @@ export class FunnelEditor {
     const edges = funnel.edges.map(e => ({
       ...e,
       isMainPath: nodeIds.includes(e.source) && nodeIds.includes(e.target),
-      volume: nodeIds.includes(e.source) && nodeIds.includes(e.target) ? e.volume : Math.floor(e.volume * 0.3)
+      volume: nodeIds.includes(e.source) && nodeIds.includes(e.target) ? e.volume : Math.floor((e.volume ?? 0) * 0.3)
     }))
     
     return {

@@ -8,17 +8,17 @@ import {
   MiniMap,
   useReactFlow,
   ReactFlowProvider,
-  NodeTypes,
+  type NodeTypes,
 } from '@xyflow/react'
 import PageNode from './page-node'
 import { CanvasControls } from './canvas-controls'
 import { useCanvasStore } from '@/lib/store/canvas-store'
 import { computeAutoLayout } from '@/lib/layout/elk-layout'
-import { FunnelNode } from '@/types/funnel'
+import type { FunnelNode } from '@/types/funnel'
 import { useDemoFunnel } from '@/hooks/use-demo-funnel'
 
 const nodeTypes: NodeTypes = {
-  pageNode: PageNode,
+  pageNode: PageNode as any,
 }
 
 function FunnelCanvasInner() {

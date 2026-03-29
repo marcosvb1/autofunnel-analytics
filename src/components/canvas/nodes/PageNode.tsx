@@ -32,7 +32,7 @@ function PageNode({ data, selected }: NodeProps<FunnelNode>) {
             <span className="font-medium">{formatVolume(data.volume)}</span>
           </div>
 
-          {data.spend > 0 && (
+          {data.spend !== undefined && data.spend > 0 && (
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Spend</span>
               <span className="font-medium">{formatSpend(data.spend)}</span>

@@ -5,7 +5,8 @@
  */
 
 // Phase 1: Page Node Data for React Flow visualization
-export interface PageNodeData {
+export interface FunnelNodeData {
+  [key: string]: unknown
   id: string
   label: string
   volume: number
@@ -13,15 +14,26 @@ export interface PageNodeData {
   conversion?: number
   roi?: number
   campaign?: string
+  campaignId?: string
   isConversion?: boolean
   url?: string
+  type?: 'page' | 'event' | 'conversion'
+  position?: { x: number; y: number }
 }
+
+// Alias for backward compatibility
+export type PageNodeData = FunnelNodeData
 
 // Phase 1: Edge Data for React Flow visualization
 export interface FunnelEdgeData {
-  conversion: string
+  [key: string]: unknown
+  source: string
+  target: string
+  conversion: number
   roi?: string
   traffic: number
+  volume?: number
+  isMainPath?: boolean
 }
 
 // Phase 1: Funnel Metadata for overall stats
