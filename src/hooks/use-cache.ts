@@ -9,6 +9,30 @@ interface CacheEntry<T> {
 
 const CACHE = new Map<string, CacheEntry<unknown>>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+const MAX_CACHE_SIZE = 50 // Maximum number of entries
+
+function cleanupCache() {
+  const now = Date.now()
+  const keysToDelete: string[] = []
+  
+  // First, remove expired entries
+  CACHE.forEach((entry, key) => {
+    if (now - entry.timestamp > CACHE_TTL) {
+      keysToDelete.push(key)
+    }
+  })
+  
+  keysToDelete.forEach(key => CACHE.delete(key))
+  
+  // If still over limit, remove oldest entries
+  if (CACHE.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(CACHE.entries())
+      .sort((a, b) => a[1].timestamp - b[1].timestamp)
+    
+    const toDelete = entries.slice(0, CACHE.size - MAX_CACHE_SIZE)
+    toDelete.forEach(([key]) => CACHE.delete(key))
+  }
+}
 
 export function useCachedFetch<T>(
   key: string,
@@ -47,6 +71,7 @@ export function useCachedFetch<T>(
 
     try {
       const result = await fetcher()
+      cleanupCache()
       CACHE.set(key, { data: result, timestamp: now })
       setData(result)
     } catch (err) {
