@@ -1,40 +1,46 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { usePathname } from 'next/navigation'
+import UserMenu from './user-menu'
 import { useAuth } from '@/hooks/use-auth'
+import { Button } from '@/components/ui/button'
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
+  const pathname = usePathname()
 
   return (
-    <nav className="border-b border-border-default bg-bg-elevated">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-semibold text-xl text-text-primary hover:text-primary transition-colors">
+    <nav className="fixed top-0 left-0 right-0 h-14 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+      <div className="container mx-auto px-4 h-full flex items-center justify-between">
+        {/* Left: Logo + Brand */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-semibold text-lg text-gray-900 hover:text-blue-600 transition-colors"
+        >
+          <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
+            <span className="text-white text-xs font-bold">A</span>
+          </div>
           AutoFunnel
         </Link>
-        
-        <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">Dashboard</Button>
-              </Link>
-              <Button variant="outline" size="sm" onClick={logout}>
-                Sign Out
+
+        {/* Right: User Menu or Auth Buttons */}
+        {user ? (
+          <UserMenu />
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link href="/auth/login">
+              <Button variant="ghost" size="sm">
+                Sign In
               </Button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login">
-                <Button variant="ghost" size="sm">Sign In</Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button size="sm">Sign Up</Button>
-              </Link>
-            </>
-          )}
-        </div>
+            </Link>
+            <Link href="/auth/signup">
+              <Button size="sm">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   )
