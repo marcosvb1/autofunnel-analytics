@@ -5,59 +5,45 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  getBezierPath,
+  getSmoothStepPath,
 } from '@xyflow/react'
-import EdgeLabel from './EdgeLabel'
+import { getEdgeColor, getEdgeWidth } from '@/lib/canvas/colors'
+import { formatPercentage } from '@/lib/canvas/formatters'
+import { useCanvasStore } from '@/lib/store/canvas-store'
 import type { FunnelEdge } from '@/types/canvas'
 
-function FunnelEdge({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
-  data,
-  selected,
-}: EdgeProps<FunnelEdge>) {
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition,
-  })
+function FunnelEdge(props: EdgeProps<FunnelEdge>) {
+  const { viewMode } = useCanvasStore()
+  const [edgePath] = getSmoothStepPath(props)
+  
+  const conversionRate = props.data?.conversion ?? 0
+  const trafficVolume = props.data?.traffic ?? 0
+  
+  const strokeColor = getEdgeColor(conversionRate)
+  const strokeWidth = viewMode === 'map' ? 2 : getEdgeWidth(trafficVolume)
+  const isAnimated = viewMode === 'heat'
 
   return (
     <>
       <BaseEdge
-        id={id}
         path={edgePath}
-        style={{
-          stroke: data?.isMainPath ? '#3b82f6' : '#94a3b8',
-          strokeWidth: data?.isMainPath ? 3 : 2,
-        }}
-        markerEnd={`url(#${data?.isMainPath ? 'arrow-main' : 'arrow'})`}
+        markerEnd={props.markerEnd}
+        style={{ strokeWidth, stroke: strokeColor }}
       />
-
-      <EdgeLabelRenderer>
-        <div
-          style={{
-            position: 'absolute',
-            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-            pointerEvents: 'all',
-          }}
-          className="nodrag nopan"
-        >
-          <EdgeLabel
-            volume={(data?.volume as number) ?? 0}
-            conversion={(data?.conversion as number) ?? 0}
-            isMainPath={(data?.isMainPath as boolean) ?? false}
-          />
-        </div>
-      </EdgeLabelRenderer>
+      
+      {isAnimated && (
+        <circle r="3" fill={strokeColor}>
+          <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
+        </circle>
+      )}
+      
+      {viewMode !== 'map' && (
+        <EdgeLabelRenderer>
+          <div className="px-2 py-1 text-xs font-medium bg-white rounded shadow-md">
+            {formatPercentage(conversionRate)}
+          </div>
+        </EdgeLabelRenderer>
+      )}
     </>
   )
 }
