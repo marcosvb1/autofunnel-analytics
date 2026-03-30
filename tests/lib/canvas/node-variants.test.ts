@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { nodeVariants, getNodeVariantClasses } from '@/lib/canvas/node-variants'
+import { nodeVariants, getNodeVariantClasses, getIconContainerClasses, getBadgeClasses } from '@/lib/canvas/node-variants'
 
 describe('node-variants', () => {
   describe('nodeVariants', () => {
@@ -74,6 +74,64 @@ describe('node-variants', () => {
         state: 'default',
       })
       expect(classes).toContain('min-w-[280px]')
+    })
+
+    it('should use default variants when props omitted', () => {
+      const classes = getNodeVariantClasses({})
+      const withDefaults = getNodeVariantClasses({
+        group: 'page',
+        size: 'default',
+        state: 'default',
+      })
+      expect(classes).toBe(withDefaults)
+    })
+  })
+
+  describe('getIconContainerClasses', () => {
+    it('should return classes for traffic group', () => {
+      const classes = getIconContainerClasses('traffic')
+      expect(classes).toContain('w-8 h-8')
+      expect(classes).toContain('rounded-full')
+    })
+
+    it('should return classes for page group', () => {
+      const classes = getIconContainerClasses('page')
+      expect(classes).toBe('w-6 h-6')
+    })
+
+    it('should return classes for event group', () => {
+      const classes = getIconContainerClasses('event')
+      expect(classes).toContain('w-7 h-7')
+      expect(classes).toContain('rounded-full')
+    })
+
+    it('should return classes for conversion group', () => {
+      const classes = getIconContainerClasses('conversion')
+      expect(classes).toContain('w-8 h-8')
+      expect(classes).toContain('rounded-full')
+      expect(classes).toContain('animate-pulse')
+    })
+  })
+
+  describe('getBadgeClasses', () => {
+    it('should return classes for traffic group', () => {
+      const classes = getBadgeClasses('traffic')
+      expect(classes).toBe('bg-blue-100 text-blue-700')
+    })
+
+    it('should return classes for page group', () => {
+      const classes = getBadgeClasses('page')
+      expect(classes).toBe('bg-gray-100 text-gray-700')
+    })
+
+    it('should return classes for event group', () => {
+      const classes = getBadgeClasses('event')
+      expect(classes).toBe('bg-purple-100 text-purple-700')
+    })
+
+    it('should return classes for conversion group', () => {
+      const classes = getBadgeClasses('conversion')
+      expect(classes).toBe('bg-green-100 text-green-700')
     })
   })
 })

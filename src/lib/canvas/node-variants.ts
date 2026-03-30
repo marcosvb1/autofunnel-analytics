@@ -52,7 +52,7 @@ export function getNodeVariantClasses(props: NodeVariantProps): string {
   return nodeVariants(props)
 }
 
-export function getIconContainerClasses(group: string): string {
+export function getIconContainerClasses(group: 'traffic' | 'page' | 'event' | 'conversion'): string {
   const classes: Record<string, string> = {
     traffic: 'w-8 h-8 rounded-full flex items-center justify-center',
     page: 'w-6 h-6',
@@ -62,7 +62,7 @@ export function getIconContainerClasses(group: string): string {
   return classes[group] || classes.page
 }
 
-export function getBadgeClasses(group: string): string {
+export function getBadgeClasses(group: 'traffic' | 'page' | 'event' | 'conversion'): string {
   const classes: Record<string, string> = {
     traffic: 'bg-blue-100 text-blue-700',
     page: 'bg-gray-100 text-gray-700',
