@@ -100,7 +100,14 @@ export function formatVolume(volume: number): string {
 }
 
 export function formatSpend(spend: number): string {
-  if (spend < 0) return `-$${Math.abs(spend).toFixed(0)}`
+  if (spend < 0) {
+    const abs = Math.abs(spend)
+    if (abs >= 1000000) return `-$${(abs / 1000000).toFixed(1)}M`
+    if (abs >= 1000) return `-$${(abs / 1000).toFixed(1)}K`
+    return `-$${abs.toFixed(0)}`
+  }
+  if (spend >= 1000000) return `$${(spend / 1000000).toFixed(1)}M`
+  if (spend >= 1000) return `$${(spend / 1000).toFixed(1)}K`
   return `$${spend.toFixed(0)}`
 }
 
