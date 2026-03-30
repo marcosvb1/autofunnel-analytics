@@ -38,10 +38,6 @@ interface FunnelCanvasProps {
   }
 }
 
-const SIDEBAR_COLLAPSED_KEY = 'canvas-sidebar-collapsed'
-const SIDEBAR_EXPANDED_WIDTH = 'w-64'
-const SIDEBAR_COLLAPSED_WIDTH = 'w-16'
-
 function SvgMarkers() {
   return (
     <defs>
@@ -81,13 +77,7 @@ function FunnelCanvasInner({
   const { nodes, edges, setNodes, setEdges } = useFunnelStore()
   const { getNodes, getEdges } = useReactFlow<FunnelNode, FunnelEdge>()
   const [isSaving, setIsSaving] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY)
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
+  const [showMetrics, setShowMetrics] = useState(true)
 
   useEffect(() => {
     if (initialNodes && initialNodes.length > 0) {
@@ -95,10 +85,6 @@ function FunnelCanvasInner({
       setEdges(initialEdges || [])
     }
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, JSON.stringify(isSidebarCollapsed))
-  }, [isSidebarCollapsed])
 
   const handleAutoLayout = useCallback(async () => {
     try {
@@ -157,6 +143,10 @@ function FunnelCanvasInner({
     }
   }, [mapId])
 
+  const handleToggleMetrics = useCallback(() => {
+    setShowMetrics((prev) => !prev)
+  }, [])
+
   const onNodesChange = useCallback(
     (changes: NodeChange<FunnelNode>[]) => {
       setNodes(applyNodeChanges(changes, nodes))
@@ -171,68 +161,55 @@ function FunnelCanvasInner({
     [edges, setEdges]
   )
 
-  const toggleSidebar = useCallback(() => {
-    setIsSidebarCollapsed((prev: boolean) => !prev)
-  }, [])
-
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] relative">
-      {/* Sidebar Retrátil */}
-      <div
-        className={`
-          ${isSidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH}
-          border-r bg-white/80 backdrop-blur-md
-          transition-all duration-300 ease-in-out
-          flex flex-col
-        `}
-      >
-        <MetricsPanel
-          {...metadata}
-          isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={toggleSidebar}
+    <div className="h-[calc(100vh-3.5rem)] relative">
+      {/* Floating Toolbar Centralizado */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
+        <ToolbarPanel
+          onAutoLayout={handleAutoLayout}
+          onSave={handleSave}
+          onExport={handleExport}
+          onToggleMetrics={handleToggleMetrics}
+          isSaving={isSaving}
+          showMetrics={showMetrics}
         />
       </div>
 
-      {/* Canvas Area */}
-      <div className="flex-1 relative overflow-hidden">
-        {/* Floating Toolbar Centralizado */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
-          <ToolbarPanel
-            onAutoLayout={handleAutoLayout}
-            onSave={handleSave}
-            onExport={handleExport}
-            isSaving={isSaving}
-          />
-        </div>
+      {/* Floating Metrics Panel */}
+      {showMetrics && (
+        <MetricsPanel
+          {...metadata}
+          onClose={handleToggleMetrics}
+        />
+      )}
 
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          fitView
-          minZoom={0.2}
-          maxZoom={2}
-        >
-          <SvgMarkers />
-          <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
-          <Controls
-            className="bg-white/80 backdrop-blur-md shadow-lg border border-gray-200 rounded-lg"
-            showInteractive={false}
-          />
-          <MiniMap
-            nodeColor={(node) => {
-              if (node.type === 'conversion') return '#22c55e'
-              if (node.type === 'event') return '#a855f7'
-              return '#3b82f6'
-            }}
-            maskColor="rgba(0, 0, 0, 0.1)"
-            className="bg-white/80 backdrop-blur-md shadow-lg border border-gray-200 rounded-lg"
-          />
-        </ReactFlow>
-      </div>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        fitView
+        minZoom={0.2}
+        maxZoom={2}
+      >
+        <SvgMarkers />
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+        <Controls
+          className="bg-white/80 backdrop-blur-md shadow-lg border border-gray-200 rounded-lg"
+          showInteractive={false}
+        />
+        <MiniMap
+          nodeColor={(node) => {
+            if (node.type === 'conversion') return '#22c55e'
+            if (node.type === 'event') return '#a855f7'
+            return '#3b82f6'
+          }}
+          maskColor="rgba(0, 0, 0, 0.1)"
+          className="bg-white/80 backdrop-blur-md shadow-lg border border-gray-200 rounded-lg"
+        />
+      </ReactFlow>
     </div>
   )
 }

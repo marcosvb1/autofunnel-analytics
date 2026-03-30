@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { formatVolume, formatSpend, formatConversion } from '@/lib/canvas/utils'
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { X } from 'lucide-react'
 
 interface MetricsPanelProps {
   totalVolume: number
@@ -8,8 +8,7 @@ interface MetricsPanelProps {
   totalConversions: number
   overallConversion: number
   roi: number
-  isCollapsed: boolean
-  onToggleCollapse: () => void
+  onClose: () => void
 }
 
 export default function MetricsPanel({
@@ -18,8 +17,7 @@ export default function MetricsPanel({
   totalConversions,
   overallConversion,
   roi,
-  isCollapsed,
-  onToggleCollapse,
+  onClose,
 }: MetricsPanelProps) {
   const metrics = [
     { label: 'Total Visitors', value: formatVolume(totalVolume) },
@@ -30,34 +28,23 @@ export default function MetricsPanel({
   ]
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden">
-      {/* Toggle Button */}
-      <div className="flex items-center justify-between p-3 border-b">
-        {!isCollapsed && (
-          <span className="text-sm font-medium text-gray-700">Funnel Metrics</span>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onToggleCollapse}
-          className="h-8 w-8 hover:bg-gray-100 transition-colors"
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? (
-            <PanelLeftOpen className="h-4 w-4" />
-          ) : (
-            <PanelLeftClose className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
+    <div className="absolute top-4 right-4 z-40">
+      <div className="w-72 bg-white/90 backdrop-blur-md shadow-lg rounded-lg border border-gray-200 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+          <h3 className="text-sm font-semibold text-gray-700">Funnel Metrics</h3>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-7 w-7 hover:bg-gray-200 transition-colors"
+            title="Close metrics"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
 
-      {/* Metrics Content */}
-      <div
-        className={`
-          flex-1 overflow-hidden transition-all duration-300
-          ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}
-        `}
-      >
+        {/* Metrics Content */}
         <div className="p-3 space-y-2">
           {metrics.map((metric) => (
             <div key={metric.label} className="flex justify-between text-sm">

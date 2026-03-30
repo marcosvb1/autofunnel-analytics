@@ -1,20 +1,24 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { LayoutGrid, Download, Save } from 'lucide-react'
+import { LayoutGrid, Download, Save, BarChart3 } from 'lucide-react'
 
 interface ToolbarPanelProps {
   onAutoLayout: () => void
   onSave: () => void
   onExport: () => void
+  onToggleMetrics: () => void
   isSaving: boolean
+  showMetrics: boolean
 }
 
 export default function ToolbarPanel({
   onAutoLayout,
   onSave,
   onExport,
+  onToggleMetrics,
   isSaving,
+  showMetrics,
 }: ToolbarPanelProps) {
   return (
     <div className="flex items-center gap-1 p-2 bg-white/80 backdrop-blur-md shadow-md rounded-lg border border-gray-200">
@@ -26,6 +30,18 @@ export default function ToolbarPanel({
         title="Auto Layout"
       >
         <LayoutGrid className="h-4 w-4" />
+      </Button>
+      
+      <div className="w-px h-6 bg-gray-200 mx-1" />
+      
+      <Button
+        variant={showMetrics ? 'secondary' : 'ghost'}
+        size="icon"
+        onClick={onToggleMetrics}
+        className="h-9 w-9 hover:bg-gray-100 transition-colors"
+        title="Toggle Metrics"
+      >
+        <BarChart3 className="h-4 w-4" />
       </Button>
       
       <div className="w-px h-6 bg-gray-200 mx-1" />
