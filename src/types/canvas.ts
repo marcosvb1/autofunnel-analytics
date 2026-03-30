@@ -9,6 +9,9 @@ import type { FunnelNodeData, FunnelEdgeData } from './funnel'
 export type FunnelNode = Node<FunnelNodeData>
 export type FunnelEdge = Edge<FunnelEdgeData>
 
+// View modes for canvas
+export type ViewMode = 'map' | 'metrics' | 'heat'
+
 // Canvas state for Zustand store
 export interface CanvasState {
   nodes: FunnelNode[]

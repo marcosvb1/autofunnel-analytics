@@ -4,12 +4,15 @@ import { create } from 'zustand'
 import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react'
 import type { NodeChange, EdgeChange } from '@xyflow/react'
 import type { FunnelNode, FunnelEdge } from '@/types/funnel'
+import type { ViewMode } from '@/types/canvas'
 
 interface CanvasState {
   nodes: FunnelNode[]
   edges: FunnelEdge[]
   selectedNodeIds: string[]
   selectedEdgeIds: string[]
+  viewMode: ViewMode
+  expandedNodeId: string | null
 }
 
 interface CanvasActions {
@@ -23,6 +26,8 @@ interface CanvasActions {
   removeEdge: (edgeId: string) => void
   selectNode: (nodeId: string) => void
   deselectAll: () => void
+  setViewMode: (mode: ViewMode) => void
+  setExpandedNode: (nodeId: string | null) => void
 }
 
 export const useCanvasStore = create<CanvasState & CanvasActions>((set, get) => ({
@@ -30,6 +35,8 @@ export const useCanvasStore = create<CanvasState & CanvasActions>((set, get) => 
   edges: [],
   selectedNodeIds: [],
   selectedEdgeIds: [],
+  viewMode: 'metrics',
+  expandedNodeId: null,
 
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
@@ -67,5 +74,13 @@ export const useCanvasStore = create<CanvasState & CanvasActions>((set, get) => 
 
   deselectAll: () => {
     set({ selectedNodeIds: [], selectedEdgeIds: [] })
+  },
+
+  setViewMode: (mode) => {
+    set({ viewMode: mode })
+  },
+
+  setExpandedNode: (nodeId) => {
+    set({ expandedNodeId: nodeId })
   },
 }))

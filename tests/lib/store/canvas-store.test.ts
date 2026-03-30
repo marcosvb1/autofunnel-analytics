@@ -212,4 +212,25 @@ describe('Canvas Store', () => {
     expect(result.current.selectedNodeIds).toEqual([])
     expect(result.current.selectedEdgeIds).toEqual([])
   })
+
+  it('should have viewMode state', () => {
+    const state = useCanvasStore.getState()
+    expect(state.viewMode).toBe('metrics')
+  })
+
+  it('should set viewMode', () => {
+    useCanvasStore.getState().setViewMode('heat')
+    expect(useCanvasStore.getState().viewMode).toBe('heat')
+  })
+
+  it('should set expanded node', () => {
+    useCanvasStore.getState().setExpandedNode('node-123')
+    expect(useCanvasStore.getState().expandedNodeId).toBe('node-123')
+  })
+
+  it('should clear expanded node', () => {
+    useCanvasStore.getState().setExpandedNode('node-123')
+    useCanvasStore.getState().setExpandedNode(null)
+    expect(useCanvasStore.getState().expandedNodeId).toBeNull()
+  })
 })
