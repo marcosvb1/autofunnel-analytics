@@ -55,14 +55,11 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
       )}
       style={{
         minHeight: isCurrentlyExpanded ? '180px' : '100px',
-        boxShadow: isCurrentlyExpanded
-          ? '0 4px 12px rgba(0, 0, 0, 0.15)'
-          : '0 2px 4px rgba(0, 0, 0, 0.1)',
+        boxShadow: isCurrentlyExpanded ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.1)',
       }}
       onClick={handleClick}
     >
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-gray-400" />
-
       <div className="p-3 h-full flex flex-col">
         {!isCurrentlyExpanded ? (
           <div className="flex-1 flex flex-col justify-between">
@@ -74,7 +71,6 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
                 </span>
               )}
             </div>
-
             <div className="space-y-0.5">
               <div className="flex justify-between text-xs">
                 <span className="text-gray-500">Volume</span>
@@ -87,7 +83,6 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
                 </div>
               )}
             </div>
-
             <div className="mt-2 pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-400 truncate">{data.url}</p>
             </div>
@@ -96,17 +91,10 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium text-sm">{data.label}</span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleActionClick(e, 'settings')
-                }}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-              >
+              <button onClick={(e) => { e.stopPropagation(); handleActionClick(e, 'settings'); }} className="p-1 hover:bg-gray-100 rounded transition-colors">
                 <span className="text-xs">⚙️</span>
               </button>
             </div>
-
             <div className="space-y-1 text-xs flex-1">
               <div className="flex justify-between">
                 <span className="text-gray-500">Volume:</span>
@@ -121,9 +109,7 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
               {data.conversion !== undefined && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Conv:</span>
-                  <span className={`font-medium ${getConversionColor(data.conversion)}`}>
-                    {formatPercentage(data.conversion)}
-                  </span>
+                  <span className={`font-medium ${getConversionColor(data.conversion)}`}>{formatPercentage(data.conversion)}</span>
                 </div>
               )}
               {data.revenue !== undefined && (
@@ -135,38 +121,21 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
               {data.roi !== undefined && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">ROI:</span>
-                  <span className={`font-medium ${data.roi >= 1 ? 'text-green-600' : 'text-red-600'}`}>
-                    {formatROI(data.roi)}
-                  </span>
+                  <span className={`font-medium ${data.roi >= 1 ? 'text-green-600' : 'text-red-600'}`}>{formatROI(data.roi)}</span>
                 </div>
               )}
             </div>
-
             <div className="mt-2 pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-400 truncate">{data.url}</p>
-              {data.campaign && (
-                <p className="text-xs text-gray-500 mt-1">🎯 {data.campaign}</p>
-              )}
+              {data.campaign && <p className="text-xs text-gray-500 mt-1">🎯 {data.campaign}</p>}
             </div>
-
             <div className="flex gap-2 mt-2">
-              <button
-                onClick={(e) => handleActionClick(e, 'details')}
-                className="flex-1 px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors"
-              >
-                Details
-              </button>
-              <button
-                onClick={(e) => handleActionClick(e, 'edit')}
-                className="flex-1 px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-              >
-                Edit
-              </button>
+              <button onClick={(e) => handleActionClick(e, 'details')} className="flex-1 px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors">Details</button>
+              <button onClick={(e) => handleActionClick(e, 'edit')} className="flex-1 px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">Edit</button>
             </div>
           </div>
         )}
       </div>
-
       <Handle type="source" position={Position.Right} className="w-3 h-3 bg-gray-400" />
     </div>
   )
