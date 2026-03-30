@@ -14,7 +14,7 @@ import type { FunnelEdge } from '@/types/canvas'
 
 function FunnelEdge(props: EdgeProps<FunnelEdge>) {
   const { viewMode } = useCanvasStore()
-  const [edgePath] = getSmoothStepPath(props)
+  const [edgePath, labelX, labelY] = getSmoothStepPath(props)
   
   const conversionRate = props.data?.conversion ?? 0
   const trafficVolume = props.data?.traffic ?? 0
@@ -39,7 +39,13 @@ function FunnelEdge(props: EdgeProps<FunnelEdge>) {
       
       {viewMode !== 'map' && (
         <EdgeLabelRenderer>
-          <div className="px-2 py-1 text-xs font-medium bg-white rounded shadow-md">
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+            }}
+            className="px-2 py-1 text-xs font-medium bg-white rounded shadow-md nodrag nopan pointer-events-auto"
+          >
             {formatPercentage(conversionRate)}
           </div>
         </EdgeLabelRenderer>
