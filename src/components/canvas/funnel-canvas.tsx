@@ -10,7 +10,7 @@ import {
   ReactFlowProvider,
   type NodeTypes,
 } from '@xyflow/react'
-import PageNode from './nodes/PageNode'
+import { PageNode, EventNode, ConversionNode, TrafficSourceNode } from './nodes'
 import { CanvasControls } from './canvas-controls'
 import { useCanvasStore } from '@/lib/store/canvas-store'
 import { computeAutoLayout } from '@/lib/layout/elk-layout'
@@ -19,6 +19,9 @@ import { useDemoFunnel } from '@/hooks/use-demo-funnel'
 
 const nodeTypes: NodeTypes = {
   pageNode: PageNode as any,
+  eventNode: EventNode as any,
+  conversionNode: ConversionNode as any,
+  trafficSourceNode: TrafficSourceNode as any,
 }
 
 function FunnelCanvasInner() {
@@ -43,6 +46,7 @@ function FunnelCanvasInner() {
         id: `node-${Date.now()}`,
         label: `New Page ${nodeCounter}`,
         volume: 0,
+        nodeCategory: 'landing_page',
       },
     }
     addNode(newNode)
