@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
-const SYSTEM_PROMPT = `You are an AI assistant for a marketing funnel canvas application. You help users understand and optimize their marketing funnels, interpret funnel data, and provide insights on conversion rates, drop-off points, and user journey optimization. You can answer questions about funnel structure, metrics, and best practices for improving conversion rates.`
+const SYSTEM_PROMPT = `You are an AI assistant for a marketing funnel canvas application.`
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,20 +13,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        ...body.messages,
-      ],
-      temperature: 0.7,
-      max_tokens: 500,
-    })
+    // Only call OpenAI if API key is available
+    if (process.env.OPENAI_API_KEY) {
+      const OpenAI = (await import('openai')).default
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...body.messages,
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      })
+
+      return NextResponse.json({
+        message: {
+          role: completion.choices[0].message.role,
+          content: completion.choices[0].message.content,
+        },
+      })
+    }
 
     return NextResponse.json({
       message: {
-        role: completion.choices[0].message.role,
-        content: completion.choices[0].message.content,
+        role: 'assistant',
+        content: 'AI is not configured. Please set OPENAI_API_KEY environment variable.',
       },
     })
   } catch (error) {
