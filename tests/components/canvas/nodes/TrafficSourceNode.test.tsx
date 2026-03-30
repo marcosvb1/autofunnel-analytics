@@ -67,7 +67,7 @@ describe('TrafficSourceNode', () => {
         zIndex={1}
       />
     )
-    expect(screen.getByText('$5000')).toBeDefined()
+    expect(screen.getByText('$5.0K')).toBeDefined()
   })
 
   it('should show campaign badge when campaign is provided', () => {
