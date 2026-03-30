@@ -49,7 +49,7 @@ export function ChatPanel({ projectId, mapId, onFunnelUpdate }: ChatPanelProps) 
                   <button
                     key={prompt}
                     onClick={() => sendMessage(prompt)}
-                    disabled={isLoading}
+                    disabled={isProcessing}
                     className="text-sm text-blue-600 hover:text-blue-800 hover:underline disabled:opacity-50 disabled:no-underline"
                   >
                     {prompt}
