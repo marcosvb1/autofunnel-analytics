@@ -1,6 +1,7 @@
 'use client'
 
-import { memo, useCallback } from 'react'
+import { useCallback, memo } from 'react'
+
 import { Handle, Position, NodeProps } from '@xyflow/react'
 import { cn } from '@/lib/utils/helpers'
 import { useCanvasStore } from '@/lib/store/canvas-store'
@@ -48,8 +49,12 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
 
   return (
     <div
+      
+      
+      
+      
       className={cn(
-        'bg-white rounded-lg transition-all duration-200 ease-out cursor-pointer overflow-hidden',
+        'bg-white rounded-lg cursor-pointer overflow-hidden',
         isCurrentlyExpanded ? 'w-[280px]' : 'w-[200px]',
         selected ? 'border-2 border-blue-500' : 'border-2 border-gray-200',
       )}
@@ -159,7 +164,7 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
       </div>
 
       <Handle type="source" position={Position.Right} className="w-3 h-3 bg-gray-400" />
-    </div>
+    </div
   )
 }
 

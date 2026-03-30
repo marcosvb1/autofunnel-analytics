@@ -1,0 +1,22 @@
+export function formatVolume(num: number): string {
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`
+  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`
+  return num.toString()
+}
+
+export function formatCurrency(num: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(num)
+}
+
+export function formatPercentage(num: number): string {
+  return `${(num * 100).toFixed(1)}%`
+}
+
+export function formatROI(num: number): string {
+  return `${num >= 0 ? '+' : ''}${(num * 100).toFixed(0)}%`
+}

@@ -10,7 +10,7 @@ import {
   ReactFlowProvider,
   type NodeTypes,
 } from '@xyflow/react'
-import PageNode from './page-node'
+import PageNode from './nodes/PageNode'
 import { CanvasControls } from './canvas-controls'
 import { useCanvasStore } from '@/lib/store/canvas-store'
 import { computeAutoLayout } from '@/lib/layout/elk-layout'
