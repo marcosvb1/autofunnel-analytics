@@ -9,7 +9,7 @@
  * Each category has distinct icons, colors, and styling.
  */
 export type NodeCategory =
-  // Traffic Sources (15 types)
+  // Traffic Sources (16 types)
   | 'google_ads'
   | 'facebook_ads'
   | 'instagram_ads'

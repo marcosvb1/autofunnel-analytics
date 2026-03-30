@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { NodeCategory, NodeTypeConfig } from '@/types/funnel'
+import type { NodeCategory, NodeTypeConfig, NodeCategoryGroup } from '@/types/funnel'
 
 describe('NodeCategory types', () => {
   it('should accept valid traffic source categories', () => {
@@ -79,6 +79,38 @@ describe('NodeCategory types', () => {
     
     validCategories.forEach(category => {
       expect(category).toBeDefined()
+    })
+  })
+
+  it('should verify NodeTypeConfig interface structure', () => {
+    const config: NodeTypeConfig = {
+      category: 'google_ads',
+      group: 'traffic',
+      label: 'Google Ads',
+      iconName: 'google',
+      primaryColor: '#4285F4',
+      secondaryColor: '#34A853',
+      backgroundColor: '#E8F0FE',
+      borderColor: '#4285F4',
+      textColor: '#1a1a1a',
+    }
+
+    expect(config.category).toBe('google_ads')
+    expect(config.group).toBe('traffic')
+    expect(config.label).toBe('Google Ads')
+    expect(config.iconName).toBe('google')
+    expect(config.primaryColor).toBe('#4285F4')
+    expect(config.secondaryColor).toBe('#34A853')
+    expect(config.backgroundColor).toBe('#E8F0FE')
+    expect(config.borderColor).toBe('#4285F4')
+    expect(config.textColor).toBe('#1a1a1a')
+  })
+
+  it('should verify NodeCategoryGroup types', () => {
+    const validGroups: NodeCategoryGroup[] = ['traffic', 'page', 'event', 'conversion']
+    
+    validGroups.forEach(group => {
+      expect(group).toBeDefined()
     })
   })
 })
