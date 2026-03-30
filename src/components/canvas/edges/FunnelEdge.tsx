@@ -18,17 +18,27 @@ function FunnelEdge(props: EdgeProps<FunnelEdge>) {
   
   const conversionRate = props.data?.conversion ?? 0
   const trafficVolume = props.data?.traffic ?? 0
+  const isMainPath = props.data?.isMainPath ?? false
   
-  const strokeColor = getEdgeColor(conversionRate)
-  const strokeWidth = viewMode === 'map' ? 2 : getEdgeWidth(trafficVolume)
+  const strokeColor = viewMode === 'map' 
+    ? (isMainPath ? '#3B82F6' : '#9CA3AF')
+    : getEdgeColor(conversionRate)
+  const strokeWidth = viewMode === 'map' 
+    ? (isMainPath ? 3 : 2)
+    : getEdgeWidth(trafficVolume)
   const isAnimated = viewMode === 'heat'
+  const strokeDasharray = viewMode === 'map' && !isMainPath ? '5,5' : undefined
 
   return (
     <>
       <BaseEdge
         path={edgePath}
         markerEnd={props.markerEnd}
-        style={{ strokeWidth, stroke: strokeColor }}
+        style={{ 
+          strokeWidth, 
+          stroke: strokeColor,
+          strokeDasharray,
+        }}
       />
       
       {isAnimated && (
