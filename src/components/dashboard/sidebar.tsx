@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import NavItem from './nav-item'
+import { useUIStore } from '@/lib/store/ui-store'
 import {
   LayoutGrid,
   Funnel,
@@ -12,23 +13,12 @@ import {
   ChevronsRight,
 } from 'lucide-react'
 
-const SIDEBAR_COLLAPSED_KEY = 'autofunnel-sidebar-collapsed'
-
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY)
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
-
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, JSON.stringify(isCollapsed))
-  }, [isCollapsed])
+  const isCollapsed = useUIStore((state) => state.isSidebarCollapsed)
+  const setSidebarCollapsed = useUIStore((state) => state.setSidebarCollapsed)
 
   const toggleSidebar = () => {
-    setIsCollapsed((prev: boolean) => !prev)
+    setSidebarCollapsed(!isCollapsed)
   }
 
   return (
