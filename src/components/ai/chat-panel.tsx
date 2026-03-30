@@ -22,7 +22,7 @@ const examplePrompts = [
 
 export function ChatPanel({ projectId, mapId, onFunnelUpdate }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { messages, isLoading, sendMessage } = useAiChat({
+  const { messages, isProcessing, sendMessage } = useAiChat({
     projectId,
     mapId,
     onFunnelUpdate,
