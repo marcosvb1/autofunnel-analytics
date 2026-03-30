@@ -4,6 +4,80 @@
  * NO React Flow dependencies here - pure data structures.
  */
 
+/**
+ * Node categories for visual differentiation.
+ * Each category has distinct icons, colors, and styling.
+ */
+export type NodeCategory =
+  // Traffic Sources (15 types)
+  | 'google_ads'
+  | 'facebook_ads'
+  | 'instagram_ads'
+  | 'tiktok_ads'
+  | 'linkedin_ads'
+  | 'youtube_ads'
+  | 'twitter_ads'
+  | 'pinterest_ads'
+  | 'snapchat_ads'
+  | 'reddit_ads'
+  | 'affiliate'
+  | 'organic_search'
+  | 'direct'
+  | 'email_marketing'
+  | 'podcast'
+  | 'webinar'
+  // Pages (12 types)
+  | 'landing_page'
+  | 'sales_page'
+  | 'checkout'
+  | 'thank_you'
+  | 'blog_post'
+  | 'webinar_registration'
+  | 'survey'
+  | 'calendar'
+  | 'order_page'
+  | 'upsell'
+  | 'vsl'
+  | 'bridge_page'
+  // Events (10 types)
+  | 'email'
+  | 'sms'
+  | 'phone_call'
+  | 'calendar_event'
+  | 'form_submit'
+  | 'video_view'
+  | 'link_click'
+  | 'file_download'
+  | 'add_to_cart'
+  | 'initiate_checkout'
+  // Conversions (6 types)
+  | 'purchase'
+  | 'lead'
+  | 'signup'
+  | 'subscription'
+  | 'demo_request'
+  | 'consultation'
+
+/**
+ * Node category groups for filtering and organization.
+ */
+export type NodeCategoryGroup = 'traffic' | 'page' | 'event' | 'conversion'
+
+/**
+ * Configuration for each node type including icon, colors, and styling.
+ */
+export interface NodeTypeConfig {
+  category: NodeCategory
+  group: NodeCategoryGroup
+  label: string
+  iconName: string
+  primaryColor: string
+  secondaryColor: string
+  backgroundColor: string
+  borderColor: string
+  textColor: string
+}
+
 // Phase 1: Page Node Data for React Flow visualization
 export interface FunnelNodeData {
   [key: string]: unknown
@@ -17,7 +91,8 @@ export interface FunnelNodeData {
   campaignId?: string
   isConversion?: boolean
   url?: string
-  type?: 'page' | 'event' | 'conversion'
+  type?: 'page' | 'event' | 'conversion' | 'traffic'
+  nodeCategory?: NodeCategory
   position?: { x: number; y: number }
 }
 
