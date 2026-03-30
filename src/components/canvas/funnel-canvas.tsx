@@ -22,7 +22,7 @@ const nodeTypes: NodeTypes = {
 }
 
 function FunnelCanvasInner() {
-  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, addNode } = useCanvasStore()
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, addNode, setViewMode } = useCanvasStore()
   const { fitView } = useReactFlow()
   const [nodeCounter, setNodeCounter] = useState(1)
   useDemoFunnel()
@@ -89,6 +89,7 @@ function FunnelCanvasInner() {
         onAutoLayout={onLayout}
         onResetZoom={handleResetZoom}
         onExport={handleExport}
+        onViewModeChange={setViewMode}
       />
     </div>
   )
