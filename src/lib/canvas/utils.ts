@@ -7,7 +7,7 @@ export function funnelMapToReactFlow(funnel: FunnelMap): {
 } {
   const nodes: FunnelNode[] = funnel.nodes.map((node) => ({
     id: node.id,
-    type: getNodeType(node.type as string),
+    type: node.type === 'traffic' ? 'traffic' : node.type === 'event' ? 'event' : node.type === 'conversion' ? 'conversion' : 'page',
     position: (node.position as { x: number; y: number }) || { x: 0, y: 0 },
     data: {
       id: node.id,
@@ -18,6 +18,7 @@ export function funnelMapToReactFlow(funnel: FunnelMap): {
       spend: node.spend,
       campaign: node.campaign,
       campaignId: node.campaignId,
+      nodeCategory: node.nodeCategory,
     },
   }))
 
