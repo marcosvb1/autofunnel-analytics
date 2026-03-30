@@ -42,8 +42,9 @@ const ICON_MAP: Record<string, any> = {
 }
 
 function EventNode({ id, data, selected }: EventNodeProps) {
-  const config = getNodeConfig(data.nodeCategory)
-  const IconComponent = ICON_MAP[data.nodeCategory] || Mail
+  const category = data.nodeCategory || 'email'
+  const config = getNodeConfig(category)
+  const IconComponent = ICON_MAP[category] || Mail
 
   return (
     <div

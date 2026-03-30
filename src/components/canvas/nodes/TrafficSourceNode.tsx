@@ -54,8 +54,9 @@ const ICON_MAP: Record<string, any> = {
 }
 
 function TrafficSourceNode({ id, data, selected }: TrafficSourceNodeProps) {
-  const config = getNodeConfig(data.nodeCategory)
-  const IconComponent = ICON_MAP[data.nodeCategory] || Target
+  const category = data.nodeCategory || 'google_ads'
+  const config = getNodeConfig(category)
+  const IconComponent = ICON_MAP[category] || Target
 
   return (
     <div

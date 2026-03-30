@@ -501,10 +501,26 @@ const CATEGORY_MAP = new Map<NodeCategory, NodeTypeConfig>(
  * @returns The node configuration
  * @throws Error if the category is not found
  */
-export function getNodeConfig(category: NodeCategory): NodeTypeConfig {
+const DEFAULT_CONFIG: NodeTypeConfig = {
+  category: 'landing_page',
+  group: 'page',
+  label: 'Page',
+  iconName: 'LayoutTemplate',
+  primaryColor: '#0EA5E9',
+  secondaryColor: '#0284C7',
+  backgroundColor: '#E0F2FE',
+  borderColor: '#0EA5E9',
+  textColor: '#1a1a1a',
+}
+
+export function getNodeConfig(category: NodeCategory | undefined): NodeTypeConfig {
+  if (!category) {
+    return DEFAULT_CONFIG
+  }
   const config = CATEGORY_MAP.get(category)
   if (!config) {
-    throw new Error(`Unknown node category: ${category}`)
+    console.warn(`Unknown node category: ${category}, using default`)
+    return DEFAULT_CONFIG
   }
   return config
 }

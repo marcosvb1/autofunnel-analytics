@@ -34,8 +34,9 @@ const ICON_MAP: Record<string, any> = {
 }
 
 function ConversionNode({ id, data, selected }: ConversionNodeProps) {
-  const config = getNodeConfig(data.nodeCategory)
-  const IconComponent = ICON_MAP[data.nodeCategory] || DollarSign
+  const category = data.nodeCategory || 'purchase'
+  const config = getNodeConfig(category)
+  const IconComponent = ICON_MAP[category] || DollarSign
 
   return (
     <div
