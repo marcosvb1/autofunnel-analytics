@@ -11,8 +11,8 @@ export default function HeroSection() {
         </h1>
         <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
           Stop manually drawing funnels. Our AI analyzes your traffic, 
-          detects conversion paths, and shows you exactly what's working 
-          and what's not - all automatically.
+          detects conversion paths, and shows you exactly what&apos;s working 
+          and what&apos;s not - all automatically.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
           <Link href="/auth/signup">
