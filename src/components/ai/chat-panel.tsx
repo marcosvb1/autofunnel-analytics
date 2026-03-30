@@ -69,7 +69,7 @@ export function ChatPanel({ projectId, mapId, onFunnelUpdate }: ChatPanelProps) 
           )}
           <div ref={messagesEndRef} />
         </div>
-        <ChatInput onSend={sendMessage} isLoading={isLoading} />
+        <ChatInput onSend={sendMessage} isLoading={isProcessing} />
       </CardContent>
     </Card>
   )
