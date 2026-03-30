@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, memo } from 'react'
-import { motion } from 'framer-motion'
+
 import { Handle, Position, NodeProps } from '@xyflow/react'
 import { cn } from '@/lib/utils/helpers'
 import { useCanvasStore } from '@/lib/store/canvas-store'
@@ -48,11 +48,11 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
   }, [id])
 
   return (
-    <motion.div
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.95, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+    <div
+      
+      
+      
+      
       className={cn(
         'bg-white rounded-lg cursor-pointer overflow-hidden',
         isCurrentlyExpanded ? 'w-[280px]' : 'w-[200px]',
@@ -164,7 +164,7 @@ function PageNode({ id, data, selected }: NodePropsWithData) {
       </div>
 
       <Handle type="source" position={Position.Right} className="w-3 h-3 bg-gray-400" />
-    </motion.div>
+    </div
   )
 }
 
